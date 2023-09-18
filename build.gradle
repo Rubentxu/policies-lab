@@ -1,0 +1,68 @@
+plugins {
+    id("groovy") 
+    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("io.micronaut.application") version "4.0.3"
+    id("com.google.cloud.tools.jib") version "2.8.0"
+    id("io.micronaut.aot") version "4.0.3"
+}
+
+version = "0.1"
+group = "dev.rubentxu"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation("io.micronaut:micronaut-management")
+    implementation("io.micronaut.groovy:micronaut-runtime-groovy")
+    implementation("io.micronaut.kubernetes:micronaut-kubernetes-client")
+    implementation("io.micronaut.kubernetes:micronaut-kubernetes-informer")
+    implementation("io.micronaut.serde:micronaut-serde-jackson")
+    implementation("io.swagger.core.v3:swagger-annotations")
+    implementation("jakarta.annotation:jakarta.annotation-api")
+    compileOnly("io.micronaut.openapi:micronaut-openapi")
+    compileOnly("io.micronaut.serde:micronaut-serde-processor")
+    runtimeOnly("ch.qos.logback:logback-classic")
+    testImplementation("io.micronaut:micronaut-http-client")
+}
+
+
+application {
+    mainClass.set("dev.rubentxu.Application")
+}
+java {
+    sourceCompatibility = JavaVersion.toVersion("17")
+    targetCompatibility = JavaVersion.toVersion("17")
+}
+
+tasks {
+    jib {
+        to {
+            image = "gcr.io/myapp/jib-image"
+        }
+    }
+}
+graalvmNative.toolchainDetection = false
+micronaut {
+    runtime("netty")
+    testRuntime("spock2")
+    processing {
+        incremental(true)
+        annotations("dev.rubentxu.*")
+    }
+    aot {
+    // Please review carefully the optimizations enabled below
+    // Check https://micronaut-projects.github.io/micronaut-aot/latest/guide/ for more details
+        optimizeServiceLoading = false
+        convertYamlToJava = false
+        precomputeOperations = true
+        cacheEnvironment = true
+        optimizeClassLoading = true
+        deduceEnvironment = true
+        optimizeNetty = true
+    }
+}
+
+
+
