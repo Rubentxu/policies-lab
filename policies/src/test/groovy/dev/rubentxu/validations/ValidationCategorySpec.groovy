@@ -1,4 +1,3 @@
-// BEGIN: yz9d8f3g4hj5
 package dev.rubentxu.validations
 
 import spock.lang.Specification
@@ -271,4 +270,3 @@ class ValidationCategorySpec extends Specification {
     }
 
 }
-// END: yz9d8f3g4hj5

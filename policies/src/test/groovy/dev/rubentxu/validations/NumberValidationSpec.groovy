@@ -91,7 +91,7 @@ class NumberValidationSpec extends Specification {
 
         }
         then:
-        result.isvalid() == RESULTADO
+        result.isValid() == RESULTADO
         result.onErrorMessages[0] == ERROR_MSG
 
         where:

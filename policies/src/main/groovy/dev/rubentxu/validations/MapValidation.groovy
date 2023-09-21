@@ -5,12 +5,12 @@ class MapValidation extends Validation<MapValidation, Map> {
     def resolvedValue
 
     private MapValidation(Map sut, boolean enableNullCheck = true) {
-        super(sut)
+        super(sut,enableNullCheck)
         resolvedValue = sut
     }
 
     private MapValidation(Map sut, String tag, boolean enableNullCheck = true) {
-        super(sut, tag)
+        super(sut, tag, enableNullCheck)
         resolvedValue = sut
     }
 

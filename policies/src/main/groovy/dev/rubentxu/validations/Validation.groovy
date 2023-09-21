@@ -56,20 +56,20 @@ class Validation<K extends Validation, T> {
     }
 
 
-    protected Boolean isvalid() {
+    Boolean isValid() {
         return !validations.any { it == false }
     }
 
 
     protected ResultValidation getResult() {
-        return new ResultValidation(isValid: isvalid(), errors: onErrorMessages)
+        return new ResultValidation(isValid: isValid(), errors: onErrorMessages)
     }
 
 
     T throwIfInvalid(String customErrorMessage = '') {
         onErrorMessages = onErrorMessages.plus(0, customErrorMessage, this.tag)
 
-        if (!isvalid()) {
+        if (!isValid()) {
             def message = Logger.createBanner(onErrorMessages.unique())
             throw new IllegalArgumentException(message)
         }
@@ -78,7 +78,7 @@ class Validation<K extends Validation, T> {
 
 
     T defaultValueIfInvalid(T defaultValue) {
-        if (isvalid()) {
+        if (isValid()) {
             return sut
         } else {
             return defaultValue
@@ -194,8 +194,26 @@ class Validation<K extends Validation, T> {
 
     <R> Validation<Validation, R> withExpression(String expression, String errorMsg) {
         return test(errorMsg) { n1 ->
-            return Eval.me("${n1} ${expression}")
+            String finalExpresion =resolveNumberAndMagnitude(n1, expression)
+            return Eval.me(finalExpresion)
         }
+    }
+
+    String resolveNumberAndMagnitude(value, String expression) {
+//        def expression = "64Mi >= 128Mi"
+        String tempExpression = "${value} ${expression}"
+        def matcher = tempExpression =~ /(\d+)([A-Za-z]+)/
+        if (matcher.find()) {
+            def number1 = matcher.group(1).toInteger()
+            def magnitude1 = matcher.group(2)
+            matcher.find()
+            def number2 = matcher.group(1).toInteger()
+            def magnitude2 = matcher.group(2)
+            def logicalExpression = "${number1} >= ${number2} && '${magnitude1}' == '${magnitude2}'"
+            return logicalExpression
+        }
+        value = value instanceof String ? "'$value'" : value
+        return "${value} ${expression}"
     }
 
 

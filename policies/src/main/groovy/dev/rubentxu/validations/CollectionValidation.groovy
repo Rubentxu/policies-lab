@@ -45,7 +45,7 @@ class CollectionValidation extends Validation<CollectionValidation, Collection> 
 
 
     CollectionValidation containsAny(Object element) {
-        return test("${tagMsg}${sut.size()} size Must contain any of $elements") { Collection n -> n.any { it == element } }
+        return test("${tagMsg}${sut.size()} size Must contain any of $element") { Collection n -> n.any { it == element } }
     }
 
 

@@ -1,5 +1,7 @@
 package dev.rubentxu.validations
 
+import dev.rubentxu.policies.ReferencesResolver
+
 
 //@Category
 class ValidationCategory {
@@ -64,6 +66,25 @@ class ValidationCategory {
             return NumberValidation.from(value, tag, enableNullCheck)
         }
         return Validation.from(value, tag, enableNullCheck)
+
+
+    }
+
+    static Validation validateReferenceResolver(Map self, String expression, boolean enableNullCheck) {
+        String value = new ReferencesResolver(expression: expression).resolveMapExpression(self)
+        if(value == "") value = null
+//        PoliciesUtils.convertToType(value)
+
+        if(value instanceof Map) {
+            return MapValidation.from(value, expression, enableNullCheck)
+        } else if(value instanceof List) {
+            return CollectionValidation.from(value, expression, enableNullCheck)
+        } else if(value instanceof String) {
+            return StringValidation.from(value, expression, enableNullCheck)
+        } else if(value instanceof Number) {
+            return NumberValidation.from(value, expression, enableNullCheck)
+        }
+        return Validation.from(value, expression, enableNullCheck)
 
 
     }
