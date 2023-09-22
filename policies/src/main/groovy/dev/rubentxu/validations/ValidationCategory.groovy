@@ -47,7 +47,6 @@ class ValidationCategory {
         return MapValidation.from(self, tag, enableNullCheck)
     }
 
-
     static Validation validateAndGet(Map self, String tag) {
         return validateAndGet(self, tag, true)
     }
@@ -71,7 +70,7 @@ class ValidationCategory {
     }
 
     static Validation validateReferenceResolver(Map self, String expression, boolean enableNullCheck) {
-        String value = new ReferencesResolver(expression: expression).resolveMapExpression(self)
+        String value = new ReferencesResolver(expression: expression).resolve(self)
         if(value == "") value = null
 //        PoliciesUtils.convertToType(value)
 

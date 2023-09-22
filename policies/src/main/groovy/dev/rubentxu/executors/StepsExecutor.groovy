@@ -1,4 +1,4 @@
-package dev.rubentxu
+package dev.rubentxu.executors
 
 import com.opencsv.CSVReader
 import com.opencsv.CSVReaderBuilder
@@ -8,17 +8,20 @@ import groovy.json.JsonSlurper
 import groovy.util.logging.Log
 import groovy.yaml.YamlSlurper
 
-
+import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.PathMatcher
 
 @Log
-class StepsExecutor {
+class StepsExecutor implements  IStepsExecutor {
 
+    @Override
     boolean fileExists(Path path) {
         return Files.exists(path)
     }
 
+    @Override
     List<HashMap<String, Object>> readCSV(Path path) {
         List<InputModel> list = new ArrayList<>();
 
@@ -42,7 +45,7 @@ class StepsExecutor {
         return list;
     }
 
-
+    @Override
     List<HashMap<String, Object>> readJSON(Path path, String encode) {
         String fileText = path.toFile().getText(encode)
         def jsonSlurper = new JsonSlurper()
@@ -58,6 +61,7 @@ class StepsExecutor {
         }
     }
 
+    @Override
     Map<String, Object> readYaml(Path path, String encode) {
         log.info("Reading YAML file: ${path}")
         String fileText = path.toFile().getText(encode)
@@ -72,13 +76,15 @@ class StepsExecutor {
         return parsedYaml
     }
 
-    List<Path> findFiles(Path path) {
+    @Override
+    List<Path> findFiles(Path rootDir, String glob) {
         def fileTree = []
-
-        path.toFile().traverse(type: FileType.FILES) { file ->
-            fileTree << file.toPath()
+        PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher("glob:" + glob)
+        Files.walk(rootDir).forEach { path ->
+            if (Files.isRegularFile(path) && pathMatcher.matches(path)) {
+                fileTree << path
+            }
         }
-
         return fileTree
     }
 }

@@ -1,6 +1,6 @@
 package dev.rubentxu.policies.parser
 
-import dev.rubentxu.StepsExecutor
+import dev.rubentxu.executors.StepsExecutor
 import dev.rubentxu.policies.InputModel
 import dev.rubentxu.policies.interfaces.IInputModelParser
 import groovy.transform.Canonical

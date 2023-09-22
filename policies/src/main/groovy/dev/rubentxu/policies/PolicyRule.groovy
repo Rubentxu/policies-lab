@@ -4,8 +4,6 @@ package dev.rubentxu.policies
 import dev.rubentxu.validations.ResultValidation
 import dev.rubentxu.validations.ValidationCategory
 import groovy.transform.Canonical
-import groovy.transform.CompileStatic
-
 
 @Canonical
 class PolicyRule {
@@ -32,11 +30,16 @@ class PolicyRule {
             }
 
             validationsToApply.each { ReferencesResolver validation ->
-                String expression = validation.resolveExpression(input)
-                ResultValidation resultFromValidationTable = input.validateReferenceResolver(this.code, false)
-                        .withExpression(expression)
-                        .getResult()
-                result.merge(resultFromValidationTable)
+                try {
+                    String expression = validation.resolve(input)
+                    ResultValidation resultFromValidationTable = input.validateReferenceResolver(this.code, false)
+                            .withExpression(expression)
+                            .getResult()
+                    result.merge(resultFromValidationTable)
+                } catch (Exception e) {
+                    result.isValid = false
+                    result.errors.add(e.message.trim())
+                }
             }
             return result
         }

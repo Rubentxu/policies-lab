@@ -5,41 +5,51 @@ import groovy.transform.Canonical
 
 @Canonical
 class ReferencesResolver {
-    SimpleTemplateEngine engine = new groovy.text.SimpleTemplateEngine()
+    SimpleTemplateEngine engine = new SimpleTemplateEngine()
     String expression
 
 
-    String resolveExpression(InputModel inputModel) {
-        String finalExpression = expression
+    def resolve(InputModel inputModel) {
         if (expression.contains('$')) {
-            finalExpression = replaceValueReference(expression, inputModel)
+           return renderTemplateString(inputModel)
+        } else {
+            return evaluateExpression(inputModel)
         }
-        return finalExpression
     }
 
 
-    String resolveMapExpression(InputModel inputModel) {
-        String finalExpression = '${' + expression + '}'
-        return replaceValueReference(finalExpression, inputModel)
-    }
-
-
-    String replaceValueReference(String expression, InputModel inputModel) {
-        Map binding = inputModel
+    def evaluateExpression(InputModel inputModel) {
         try {
-            def expressionWithResolvedReferences = engine.createTemplate(expression).make(binding)
+            Binding binding = new Binding(inputModel)
+            GroovyShell sh = new GroovyShell(binding)
+            def result = sh.evaluate(expression.trim())
+            return result
+        } catch (Exception e) {
+            String noSuchProperty = noSuchPropertyMessage(e)
+            throw new RuntimeException("Error evaluating expression: ${expression.trim()} ${noSuchProperty.trim()}".toString().trim())
+        }
+    }
+
+
+    String renderTemplateString(InputModel inputModel) {
+        try {
+            Writable expressionWithResolvedReferences = engine.createTemplate(expression.trim()).make(inputModel)
             return expressionWithResolvedReferences?.toString()
         } catch (Exception e) {
-            if (e.message.contains('No such property')) {
-                def matcher = e.message =~ /.*No such property: ([\w]+) for/
-                if (matcher) {
-                    def propertyName = matcher[0][1]
-                    String resolvedExpression = expression.replace('$' + propertyName, 'null')
-                    return replaceValueReference(resolvedExpression, inputModel)
-                }
-            }
+            String noSuchProperty = noSuchPropertyMessage(e)
+            throw new RuntimeException("Error rendering template string: '${expression.trim()}' ${noSuchProperty.trim()}".toString().trim())
         }
-        return expression
+
+    }
+
+    private String noSuchPropertyMessage(Exception e) {
+        String noSuchProperty = ''
+        def matcher = e.getMessage() =~ /No such property: \w+/
+
+        if (matcher) {
+            noSuchProperty = matcher[0]  // Imprimirá: No such property: address
+        }
+        return noSuchProperty
     }
 
 }

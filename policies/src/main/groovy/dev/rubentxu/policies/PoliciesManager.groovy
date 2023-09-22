@@ -1,6 +1,6 @@
 package dev.rubentxu.policies
 
-import dev.rubentxu.StepsExecutor
+import dev.rubentxu.executors.StepsExecutor
 import dev.rubentxu.policies.interfaces.IInputModelParser
 import dev.rubentxu.policies.interfaces.IPoliciesManager
 import dev.rubentxu.validations.ResultValidation
@@ -14,7 +14,7 @@ import java.nio.file.Path
 class PoliciesManager implements IPoliciesManager {
 
     StepsExecutor steps
-    Map<String, List<PolicyRule>> rulesByPath
+    Map<String, List<PolicyRule>> rulesByPath = [:]
     InputModelsParserFactory factory
 
     @Override
@@ -49,7 +49,7 @@ class PoliciesManager implements IPoliciesManager {
     @Override
     List<ResultValidation> applyPoliciesToInputModel(Path policiesFilePath, String typeInputModel, Path pathInputModel) {
         IInputModelParser parser = factory.getParser(typeInputModel)
-        List<InputModel> inputModels = parser.parseFiles(steps.findFiles(pathInputModel))
+        List<InputModel> inputModels = parser.parseFiles(steps.findFiles(policiesFilePath,"**/${pathInputModel}/*.${typeInputModel}"))
 
         List<PolicyRule> policyRules = parseTopicPoliciesSpecs(policiesFilePath)
 

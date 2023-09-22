@@ -1,0 +1,20 @@
+policies_specs:
+#   Salario mínimo
+  MinSalary:
+    key: 'salario'
+    validations:
+      - '>= 35000'
+
+  # Departamento válido
+  ValidDepartment:
+    key: 'departamento'
+    validations:
+      - 'IN ["Marketing", "Ventas", "Finanzas", "IT"]'
+    exceptions: [ ]
+
+  # Correo electrónico válido
+  ValidEmail:
+    key: 'email'
+    validations:
+      - '==~ /([a-zA-Z0-9._%+\-]+)@([a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/'
+    exceptions: [ ]

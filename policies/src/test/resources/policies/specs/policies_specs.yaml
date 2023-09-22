@@ -1,0 +1,27 @@
+policies_specs:
+  # Número mínimo de réplicas
+  MinReplicas:
+    key: 'spec.replicas'
+    validations:
+      - '>= 2'
+
+  # Recursos de límite para CPU
+  CpuLimit:
+    key: 'spec.template.spec.containers[0].resources.limits.cpu'
+    validations:
+      - '== 500m'
+    exceptions: [ ]
+
+  # Recursos de solicitud para memoria
+  MemoryRequest:
+    key: 'spec.template.spec.containers[0].resources.requests.memory'
+    validations:
+      - '>= 128Mi'
+    exceptions: [ ]
+
+  # Variable de entorno de configuración
+  ConfigEnvVar:
+    key: 'spec.template.spec.containers[0].env.find{ it.name == "CONFIG_FILE" }.value'
+    validations:
+      - '== "/etc/peets/config.yml"'
+    exceptions: [ ]
