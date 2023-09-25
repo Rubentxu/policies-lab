@@ -1,5 +1,7 @@
 package dev.rubentxu.validations
 
+import dev.rubentxu.policies.InputModel
+
 
 class NumberValidation extends Validation<NumberValidation, Number> {
     final static def REGEX_LESS_THAN = /<\s*(\d+\.?\d*)\s*$/
@@ -28,90 +30,158 @@ class NumberValidation extends Validation<NumberValidation, Number> {
 
 
     NumberValidation lowerThan(Number max) {
-        return test("${tagMsg}${sut} Must be lower than $max") { Number n -> n < max }
+        InputModel model = new InputModel()
+        model.put("tagMsg", tagMsg)
+        model.put("sut", sut)
+        model.put("max", max)
+
+        return test(renderMessage('lowerThan', model)) { Number n -> n < max }
     }
 
 
     NumberValidation greaterThan(Number min) {
-        return test("${tagMsg}${sut} Must be greater than $min") { Number n -> n > min }
+        InputModel model = new InputModel()
+        model.put("tagMsg", tagMsg)
+        model.put("sut", sut)
+        model.put("min", min)
+
+        return test(renderMessage('greaterThan', model)) { Number n -> n > min }
     }
 
 
     NumberValidation between(Number min, Number max) {
-        return test("${tagMsg}${sut} Must be between $min and $max") { Number n -> n >= min && n <= max }
+        InputModel model = new InputModel()
+        model.put("tagMsg", tagMsg)
+        model.put("sut", sut)
+        model.put("min", min)
+        model.put("max", max)
+
+        return test(renderMessage('between', model)) { Number n -> n >= min && n <= max }
     }
 
 
     NumberValidation isPositive() {
-        return test("${tagMsg}${sut} Must be positive") { Number n -> n > 0 }
+        InputModel model = new InputModel()
+        model.put("tagMsg", tagMsg)
+        model.put("sut", sut)
+
+        return test(renderMessage('isPositive', model)) { Number n -> n > 0 }
     }
 
 
     NumberValidation isNegative() {
-        return test("${tagMsg}${sut} Must be negative") { Number n -> n < 0 }
+        InputModel model = new InputModel()
+        model.put("tagMsg", tagMsg)
+        model.put("sut", sut)
+
+        return test(renderMessage('isNegative', model)) { Number n -> n < 0 }
     }
 
 
     NumberValidation isZero() {
-        return test("${tagMsg}${sut} Must be zero") { Number n -> n == 0 }
+        InputModel model = new InputModel()
+        model.put("tagMsg", tagMsg)
+        model.put("sut", sut)
+
+        return test(renderMessage('isZero', model)) { Number n -> n == 0 }
     }
 
 
     NumberValidation isNotZero() {
-        return test("${tagMsg}${sut} Must be not zero") { Number n -> n != 0 }
+        InputModel model = new InputModel()
+        model.put("tagMsg", tagMsg)
+        model.put("sut", sut)
+
+        return test(renderMessage('isNotZero', model)) { Number n -> n != 0 }
     }
 
 
     NumberValidation isEven() {
-        return test("${tagMsg}${sut} Must be even") { Number n -> n % 2 == 0 }
+        InputModel model = new InputModel()
+        model.put("tagMsg", tagMsg)
+        model.put("sut", sut)
+
+        return test(renderMessage('isEven', model)) { Number n -> n % 2 == 0 }
     }
 
 
     NumberValidation isOdd() {
-        return test("${tagMsg}${sut} Must be odd") { Number n -> n % 2 != 0 }
+        InputModel model = new InputModel()
+        model.put("tagMsg", tagMsg)
+        model.put("sut", sut)
+
+        return test(renderMessage('isOdd', model)) { Number n -> n % 2 != 0 }
     }
 
 
-    NumberValidation lessOrEqual(Number n) {
-        return test("${tagMsg}${sut} Must be less or equal to $n") { Number n1 -> n1 <= n }
+    NumberValidation lessOrEqual(Number number) {
+        InputModel model = new InputModel()
+        model.put("tagMsg", tagMsg)
+        model.put("sut", sut)
+        model.put("number", number)
+
+        return test(renderMessage('lessOrEqual', model)) { Number n1 -> n1 <= n }
     }
 
 
-    NumberValidation moreOrEqual(Number n) {
-        return test("${tagMsg}${sut} Must be more or equal to $n") { Number n1 -> n1 >= n }
+    NumberValidation moreOrEqual(Number number) {
+        InputModel model = new InputModel()
+        model.put("tagMsg", tagMsg)
+        model.put("sut", sut)
+        model.put("number", number)
+
+        return test(renderMessage('moreOrEqual', model)) { Number n1 -> n1 >= n }
     }
 
 
     NumberValidation withExpression(String expression) {
         expression = expression.trim()
+        InputModel model = new InputModel()
+        model.put("tagMsg", tagMsg)
+        model.put("sut", sut)
 
         if (expression ==~ REGEX_LESS_THAN) {
             def matcher = expression =~ REGEX_LESS_THAN
-            return withExpression(expression, "${tagMsg}${sut} Must be lower than ${matcher[0][1]}")
+            model.put("value", matcher[0][1])
+
+            return withExpression(expression, renderMessage('lessThanNumber', model))
         }
         if (expression ==~ REGEX_MORE_THAN) {
             def matcher = expression =~ REGEX_MORE_THAN
-            return withExpression(expression, "${tagMsg}${sut} Must be greater than ${matcher[0][1]}")
+            model.put("value", matcher[0][1])
+
+            return withExpression(expression, renderMessage('moreThanNumber', model))
         }
         if (expression ==~ REGEX_BETWEEN) {
             def matcher = expression =~ REGEX_BETWEEN
-            return withRangeExpression(expression, "${tagMsg}${sut} Must be between ${matcher[0][1]} and ${matcher[0][2]}")
+            model.put("value", matcher[0][1])
+            model.put("value2", matcher[0][2])
+
+            return withRangeExpression(expression, renderMessage('betweenNumber', model))
         }
         if (expression ==~ REGEX_EQUAL) {
             def matcher = expression =~ REGEX_EQUAL
-            return withExpression(expression, "${tagMsg}${sut} Must be equal to ${matcher[0][1]}")
+            model.put("value", matcher[0][1])
+
+            return withExpression(expression, renderMessage('equalsNumber', model))
         }
         if (expression ==~ REGEX_NOT_EQUAL) {
             def matcher = expression =~ REGEX_NOT_EQUAL
-            return withExpression(expression, "${tagMsg}${sut} Must be not equal to ${matcher[0][1]}")
+            model.put("value", matcher[0][1])
+
+            return withExpression(expression, renderMessage('notEqualsNumber', model))
         }
         if (expression ==~ REGEX_LESS_OR_EQUAL) {
             def matcher = expression =~ REGEX_LESS_OR_EQUAL
-            return withExpression(expression, "${tagMsg}${sut} Must be less or equal to ${matcher[0][1]}")
+            model.put("value", matcher[0][1])
+
+            return withExpression(expression, renderMessage('lessOrEqualNumber', model))
         }
         if (expression ==~ REGEX_MORE_OR_EQUAL) {
             def matcher = expression =~ REGEX_MORE_OR_EQUAL
-            return withExpression(expression, "${tagMsg}${sut} Must be more or equal to ${matcher[0][1]}")
+            model.put("value", matcher[0][1])
+
+            return withExpression(expression, renderMessage('moreOrEqualNumber', model))
         }
         if (expression ==~ REGEX_IS_NULL) {
             return isNull()

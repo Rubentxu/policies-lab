@@ -1,5 +1,6 @@
 package dev.rubentxu.validations
 
+import dev.rubentxu.policies.InputModel
 import groovy.text.SimpleTemplateEngine
 
 //@CompileStatic
@@ -27,12 +28,22 @@ class StringValidation extends Validation<StringValidation, String> {
 
 
     StringValidation moreThan(int size) {
-        return test("${tagMsg}${sut} Must have more than $size chars.") { String s -> s.length() >= size }
+        InputModel model = new InputModel()
+        model.put("tagMsg", tagMsg)
+        model.put("sut", sut)
+        model.put("size", size)
+
+        return test(renderMessage('moreThan', model)) { String s -> s.length() >= size }
     }
 
 
     StringValidation lessThan(int size) {
-        return test("${tagMsg}${sut} Must have less than $size chars.") { String s -> s.length() <= size }
+        InputModel model = new InputModel()
+        model.put("tagMsg", tagMsg)
+        model.put("sut", sut)
+        model.put("size", size)
+
+        return test(renderMessage('lessThanString', model)) { String s -> s.length() <= size }
     }
 
 
@@ -42,38 +53,70 @@ class StringValidation extends Validation<StringValidation, String> {
     }
 
 
-    StringValidation contains(String c) {
-        return test("${tagMsg}${sut} Must contain $c") { String s -> s.contains(c) }
+    StringValidation contains(String subString) {
+        InputModel model = new InputModel()
+        model.put("tagMsg", tagMsg)
+        model.put("sut", sut)
+        model.put("subString", subString)
+
+        return test(renderMessage('contains', model)) { String s -> s.contains(c) }
     }
 
 
     StringValidation isEmail() {
-        return test("${tagMsg}${sut} Must be email type") { String s -> s ==~ EMAIL_REGEX }
+        InputModel model = new InputModel()
+        model.put("tagMsg", tagMsg)
+        model.put("sut", sut)
+
+        return test(renderMessage('isEmail', model)) { String s -> s ==~ EMAIL_REGEX }
     }
 
 
     StringValidation matchRegex(regex) {
-        return test("${tagMsg}${sut} Must be match Regular Expression '/$regex/'") { String s -> s ==~ regex }
+        InputModel model = new InputModel()
+        model.put("tagMsg", tagMsg)
+        model.put("sut", sut)
+        model.put("regex", regex)
+
+        return test(renderMessage('matchRegex', model)) { String s -> s ==~ regex }
     }
 
 
     StringValidation isHttpProtocol() {
-        return test("${tagMsg}${sut} Must be http protocol type") { String s -> s ==~ HTTP_PROTOCOL_REGEX }
+        InputModel model = new InputModel()
+        model.put("tagMsg", tagMsg)
+        model.put("sut", sut)
+
+        return test(renderMessage('isHttpProtocol', model)) { String s -> s ==~ HTTP_PROTOCOL_REGEX }
     }
 
 
     StringValidation containsIn(String[] array) {
-        return test("${tagMsg}${sut} Must contain in ${array.join(',')}") { String s -> array.contains(s) }
+        InputModel model = new InputModel()
+        model.put("tagMsg", tagMsg)
+        model.put("sut", sut)
+        model.put("array", array)
+
+        return test(renderMessage('containsIn', model)) { String s -> array.contains(s) }
     }
 
 
     StringValidation containsIn(List<String> array) {
-        return test("${tagMsg}${sut} Must contain in ${array.join(',')}") { String s -> array.contains(s) }
+        InputModel model = new InputModel()
+        model.put("tagMsg", tagMsg)
+        model.put("sut", sut)
+        model.put("array", array)
+
+        return test(renderMessage('containsIn', model)) { String s -> array.contains(s) }
     }
 
 
     StringValidation notEmpty() {
-        return test("${tagMsg}${sut} Must not be empty") { s -> s != null && s != '' }
+        InputModel model = new InputModel()
+        model.put("tagMsg", tagMsg)
+        model.put("sut", sut)
+
+        return test(renderMessage('notEmpty', model)) { s -> s != null && s != '' }
     }
 
 
