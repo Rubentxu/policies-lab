@@ -1,13 +1,14 @@
 package dev.rubentxu.validations
 
+import dev.rubentxu.policies.result.ValidationOutcome
 import spock.lang.Specification
 
-class ResultValidationSpec extends Specification {
+class ValidationResultSpec extends Specification {
 
     def "merge should combine the results of two ResultValidation objects"() {
         given:
-        def resultValidation1 = new ResultValidation(isValid: true, errors: ["error1"], metadata: [key1: "value1"])
-        def resultValidation2 = new ResultValidation(isValid: false, errors: ["error2"], metadata: [key2: "value2"])
+        def resultValidation1 = new ValidationOutcome(isValid: true, errors: ["error1"], metadata: [key1: "value1"])
+        def resultValidation2 = new ValidationOutcome(isValid: false, errors: ["error2"], metadata: [key2: "value2"])
 
         when:
         resultValidation1.merge(resultValidation2)
@@ -20,7 +21,7 @@ class ResultValidationSpec extends Specification {
 
     def "toString should return a string representation of the ResultValidation object"() {
         given:
-        def resultValidation = new ResultValidation(isValid: true, errors: ["error1", "error2"], metadata: [key1: "value1", key2: "value2"])
+        def resultValidation = new ValidationOutcome(isValid: true, errors: ["error1", "error2"], metadata: [key1: "value1", key2: "value2"])
 
         when:
         def result = resultValidation.toString()
@@ -31,7 +32,7 @@ class ResultValidationSpec extends Specification {
 
     def "toMap should return a map representation of the ResultValidation object"() {
         given:
-        def resultValidation = new ResultValidation(isValid: true, errors: ["error1", "error2"], metadata: [key1: "value1", key2: "value2"])
+        def resultValidation = new ValidationOutcome(isValid: true, errors: ["error1", "error2"], metadata: [key1: "value1", key2: "value2"])
 
         when:
         def result = resultValidation.toMap()

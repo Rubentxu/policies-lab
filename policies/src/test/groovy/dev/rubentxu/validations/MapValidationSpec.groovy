@@ -1,5 +1,6 @@
 package dev.rubentxu.validations
 
+import dev.rubentxu.policies.result.ValidationOutcome
 import spock.lang.Specification
 
 class MapValidationSpec extends Specification {
@@ -34,7 +35,7 @@ class MapValidationSpec extends Specification {
         def validation = MapValidation.from(sut)
 
         when:
-        ResultValidation result =  validation.getKey("key") .getResult()
+        ValidationOutcome result =  validation.getKey("key") .getResult()
 
         then:
         result.errors[0] == "There is no configuration defined for key 'key'"

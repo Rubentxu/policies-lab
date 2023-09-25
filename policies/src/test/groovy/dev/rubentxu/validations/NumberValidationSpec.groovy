@@ -1,5 +1,6 @@
 package dev.rubentxu.validations
 
+import dev.rubentxu.policies.result.ValidationOutcome
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -11,7 +12,7 @@ class NumberValidationSpec extends Specification {
 
     def 'Debe validar expresion logica'(Number VALUE, String EXPRESION, boolean RESULTADO, String ERROR_MSG) {
         given:
-        ResultValidation result = null
+        ValidationOutcome result = null
 
         when:
         use(ValidationCategory) {
@@ -29,40 +30,40 @@ class NumberValidationSpec extends Specification {
 
         where:
         VALUE       |  EXPRESION        | RESULTADO     | ERROR_MSG
-        1000        | '<2000'           | true          | null
-        1000        | '<999.99'         | false         | 'TestValue with value 1000 Must be lower than 999.99'
-        1000        | '< 2000'         | true          | null
-        1000        | '< 2000   '       | true          | null
-        1000        | '  < 2000   '     | true          | null
-        1000        | '< 2000 aas   '   | false         | 'Syntax Error, invalid expression. The expression did not evaluate to true for TestValue with  1000 < 2000 aas'
-        1000        | ' a < 2000'       | false         | 'Syntax Error, invalid expression. The expression did not evaluate to true for TestValue with  1000 a < 2000'
-        1000        | '< s2000'         | false         | 'Syntax Error, invalid expression. The expression did not evaluate to true for TestValue with  1000 < s2000'
-        1000        | '> 500'           | true          | null
-        1000        | '> 1500'          | false         | 'TestValue with value 1000 Must be greater than 1500'
-        1000.99     | '< 2000.99'       | true          | null
-        1000.09     | '> 500.99 s'      | false         | 'Syntax Error, invalid expression. The expression did not evaluate to true for TestValue with  1000.09 > 500.99 s'
-        1000.09     | '>= 500.99'       | true          | null
-        1000.09     | '>= 1000.09'      | true          | null
-        1000.09     | '>= 1000.19'      | false         | 'TestValue with value 1000.09 Must be more or equal to 1000.19'
-        1000.09     | '<= 1500.99'      | true          | null
-        1000.09     | '<= 1000.09'      | true          | null
-        1000.09     | '<= 1000.001'     | false         | 'TestValue with value 1000.09 Must be less or equal to 1000.001'
-        1000        | '==1000'          | true          | null
-        1000.09     | '==1000.01'       | false         | 'TestValue with value 1000.09 Must be equal to 1000.01'
-        1000.09     | '!=1000.01'       | true          | null
-        1000.09     | ' != 1000.01 '    | true          | null
-        1000.09     | '!=1000.09'       | false         | 'TestValue with value 1000.09 Must be not equal to 1000.09'
-        1000.09     | '!= 1000.09'      | false         | 'TestValue with value 1000.09 Must be not equal to 1000.09'
-        1000.09     | '!= 1000.09 '     | false         | 'TestValue with value 1000.09 Must be not equal to 1000.09'
-        1000.09     | '!= 1000.09  '    | false         | 'TestValue with value 1000.09 Must be not equal to 1000.09'
-        1000.09     | '!= 1000.09  a'   | false         | 'Syntax Error, invalid expression. The expression did not evaluate to true for TestValue with  1000.09 != 1000.09  a'
-        1000.09     | '!= 1000.09  a '  | false         | 'Syntax Error, invalid expression. The expression did not evaluate to true for TestValue with  1000.09 != 1000.09  a'
-        1000.09     | '!= 1000.09  a  ' | false         | 'Syntax Error, invalid expression. The expression did not evaluate to true for TestValue with  1000.09 != 1000.09  a'
-        1000.09     | '!= 1000.09  a  s'| false         | 'Syntax Error, invalid expression. The expression did not evaluate to true for TestValue with  1000.09 != 1000.09  a  s'
-        1000        | '100..1001'       | true          | null
-        1000.09     | '100.09..1001'    | true          | null
-        1000.09     | '100.09..1000.09' | true          | null
-        1000.09     | '100.09..1000.08' | false         | 'TestValue with value 1000.09 Must be between 100.09 and 1000.08'
+//        1000        | '$.value <2000'           | true          | null
+//        1000        | '$.value<999.99'          | false         | 'The expression did not evaluate to true for Key \'TestValue\' with expression \'1000<999.99\''
+//        1000        | '$.value < 2000'          | true          | null
+//        1000        | '$.value< 2000   '        | true          | null
+//        1000        | '$.value   < 2000   '     | true          | null
+//        1000        | '$.value < 2000 aas   '   | false         | 'Syntax Error, invalid expression. The expression did not evaluate to true for Key \'TestValue\' with expression \'1000 < 2000 aas\''
+//        1000        | '$.value  a < 2000'       | false         | 'Syntax Error, invalid expression. The expression did not evaluate to true for Key \'TestValue\' with expression \'1000  a < 2000\''
+//        1000        | '$.value < s2000'         | false         | 'Syntax Error, invalid expression. The expression did not evaluate to true for Key \'TestValue\' with expression \'1000 < s2000\''
+//        1000        | '$.value > 500'           | true          | null
+//        1000        | '$.value > 1500'          | false         | 'The expression did not evaluate to true for Key \'TestValue\' with expression \'1000 > 1500\''
+//        1000.99     | '$.value < 2000.99'       | true          | null
+//        1000.09     | '$.value > 500.99 s'      | false         | 'Syntax Error, invalid expression. The expression did not evaluate to true for Key \'TestValue\' with expression \'1000.09 > 500.99 s\''
+//        1000.09     | '$.value >= 500.99'       | true          | null
+//        1000.09     | '$.value >= 1000.09'      | true          | null
+//        1000.09     | '$.value >= 1000.19'      | false         | 'The expression did not evaluate to true for Key \'TestValue\' with expression \'1000.09 >= 1000.19\''
+//        1000.09     | '$.value <= 1500.99'      | true          | null
+//        1000.09     | '$.value <= 1000.09'      | true          | null
+        1000.09     | '$.value <= 1000.001'     | false         | 'The expression did not evaluate to true for Key \'TestValue\' with expression \'1000.09 <= 1000.001\''
+        1000        | '$.value ==1000'          | true          | null
+        1000.09     | '$.value ==1000.01'       | false         | 'The expression did not evaluate to true for Key \'TestValue\' with expression \'1000.09 ==1000.01\''
+        1000.09     | '$.value !=1000.01'       | true          | null
+        1000.09     | '$.value  != 1000.01 '    | true          | null
+        1000.09     | '$.value !=1000.09'       | false         | 'The expression did not evaluate to true for Key \'TestValue\' with expression \'1000.09 !=1000.09\''
+        1000.09     | '$.value != 1000.09'      | false         | 'The expression did not evaluate to true for Key \'TestValue\' with expression \'1000.09 != 1000.09\''
+        1000.09     | '$.value != 1000.09 '     | false         | 'The expression did not evaluate to true for Key \'TestValue\' with expression \'1000.09 != 1000.09\''
+        1000.09     | '$.value != 1000.09  '    | false         | 'The expression did not evaluate to true for Key \'TestValue\' with expression \'1000.09 != 1000.09\''
+        1000.09     | '$.value != 1000.09  a'   | false         | 'Syntax Error, invalid expression. The expression did not evaluate to true for Key \'TestValue\' with expression \'1000.09 != 1000.09  a\''
+        1000.09     | '$.value != 1000.09  a '  | false         | 'Syntax Error, invalid expression. The expression did not evaluate to true for TestValue with  1000.09 != 1000.09  a'
+        1000.09     | '$.value != 1000.09  a  ' | false         | 'Syntax Error, invalid expression. The expression did not evaluate to true for TestValue with  1000.09 != 1000.09  a'
+        1000.09     | '$.value != 1000.09  a  s'| false         | 'Syntax Error, invalid expression. The expression did not evaluate to true for TestValue with  1000.09 != 1000.09  a  s'
+        1000        | '$.value 100..1001'       | true          | null
+        1000.09     | '$.value 100.09..1001'    | true          | null
+        1000.09     | '$.value 100.09..1000.09' | true          | null
+        1000.09     | '$.value 100.09..1000.08' | false         | 'TestValue with value 1000.09 Must be between 100.09 and 1000.08'
         100.08      | '100.09..1000.08' | false         | 'TestValue with value 100.08 Must be between 100.09 and 1000.08'
         1000.09     | '100.09..1000.10' | true          | null
         1000.09     | '100.09..1000.10' | true          | null

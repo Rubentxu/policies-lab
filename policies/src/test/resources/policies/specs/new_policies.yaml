@@ -1,0 +1,33 @@
+
+policies:
+  # Identificador de la política
+#  - id: my-policy
+#    effect: Allow
+#    conditions:
+#      - key: resource
+#        value: pods
+#        type: equals
+#    rules:
+#      - key: spec.template.spec.containers[0].ports[0].containerPort
+#        type: VALIDATION
+#        expressions:
+#          - $.value >= 1025
+
+  - id: CpuLimit
+    effect: Allow
+    conditions: []
+    rules:
+      - key: 'spec.template.spec.containers[0].resources.limits.cpu'
+        type: VALIDATION
+        expressions:
+          - $.value == 500m
+
+#  - id: ConfigEnvVar
+#    effect: Allow
+#    conditions: [ ]
+#    rules:
+#      - key: 'spec.template.spec.containers[0].env.find{ it.name == "CONFIG_FILE" }.value'
+#        type: VALIDATION
+#        expressions:
+#          - $.value == "/etc/peets/config.yml"
+

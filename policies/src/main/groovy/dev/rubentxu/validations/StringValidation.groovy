@@ -108,7 +108,7 @@ class StringValidation extends Validation<StringValidation, String> {
         if (expression ==~ REGEX_IS_NOT_NULL) {
             return notNull()
         }
-        return Object.withExpression(expression) as StringValidation
+        return super.withExpression(expression) as StringValidation
 
     }
 

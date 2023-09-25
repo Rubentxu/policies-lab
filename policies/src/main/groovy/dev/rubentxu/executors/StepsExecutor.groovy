@@ -2,8 +2,7 @@ package dev.rubentxu.executors
 
 import com.opencsv.CSVReader
 import com.opencsv.CSVReaderBuilder
-import dev.rubentxu.policies.InputModel
-import groovy.io.FileType
+import dev.rubentxu.policies.input.InputModel
 import groovy.json.JsonSlurper
 import groovy.util.logging.Log
 import groovy.yaml.YamlSlurper

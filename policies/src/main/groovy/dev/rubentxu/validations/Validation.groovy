@@ -1,7 +1,13 @@
 package dev.rubentxu.validations
 
+import dev.rubentxu.policies.ExpressionEvaluator
+import dev.rubentxu.policies.InputModel
+import dev.rubentxu.policies.result.ValidationOutcome
+import groovy.util.logging.Log
 import org.codehaus.groovy.runtime.NullObject
 
+
+@Log
 class Validation<K extends Validation, T> {
     protected List<Boolean> validations
     protected List<String> onErrorMessages
@@ -10,6 +16,7 @@ class Validation<K extends Validation, T> {
     protected boolean enableNullCheck = true
     final static def REGEX_IS_NULL = /==\s*(NULL|null)\s*$/
     final static def REGEX_IS_NOT_NULL = /!=\s*(NULL|null)\s*$/
+    final ResourceBundle messages
 
 
     protected Validation(T sut, boolean enableNullCheck = true) {
@@ -21,8 +28,11 @@ class Validation<K extends Validation, T> {
         if (this.enableNullCheck) {
             notNull()
         }
+        Locale locale = Locale.getDefault()
+        messages = ResourceBundle.getBundle("i18n/messages", locale)
 
     }
+
 
     protected Validation(T sut, String tag, boolean enableNullCheck = true) {
         this.validations = []
@@ -33,8 +43,14 @@ class Validation<K extends Validation, T> {
         if (this.enableNullCheck) {
             notNull()
         }
+        Locale locale = Locale.getDefault()
+        messages = ResourceBundle.getBundle("i18n/messages", locale)
     }
 
+    protected String renderMessage(String key, InputModel model) {
+        String message = messages.getString(key)
+        return ExpressionEvaluator.renderTemplateString(model, message)
+    }
 
     protected K test(String onErrorMessage, Closure<Boolean> predicate) {
         try {
@@ -50,7 +66,9 @@ class Validation<K extends Validation, T> {
 
         } catch (Exception ex) {
             validations.add(false)
-            onErrorMessages.add("Syntax Error, invalid expression. $onErrorMessage")
+            InputModel model = new InputModel()
+            model.put("onErrorMessage", onErrorMessage)
+            onErrorMessages.add(renderMessage('exception', model))
         }
         return this as K
     }
@@ -61,8 +79,8 @@ class Validation<K extends Validation, T> {
     }
 
 
-    protected ResultValidation getResult() {
-        return new ResultValidation(isValid: isValid(), errors: onErrorMessages)
+    protected ValidationOutcome getResult() {
+        return new ValidationOutcome(isValid: isValid(), errors: onErrorMessages)
     }
 
 
@@ -70,7 +88,7 @@ class Validation<K extends Validation, T> {
         onErrorMessages = onErrorMessages.plus(0, customErrorMessage, this.tag)
 
         if (!isValid()) {
-            def message = Logger.createBanner(onErrorMessages.unique())
+            def message= onErrorMessages.unique()
             throw new IllegalArgumentException(message)
         }
         return sut
@@ -92,12 +110,18 @@ class Validation<K extends Validation, T> {
 
 
     protected String getTagMsg() {
-        return tag ? "$tag with value " : ""
+        InputModel model = new InputModel()
+        model.put("tag", tag)
+        return tag ? renderMessage('getTagMsg', model) : ""
     }
 
 
     K notNull() {
-        K result = test("${tagMsg}${sut} Must not be null") {
+        InputModel model = new InputModel()
+        model.put("tagMsg", tagMsg)
+        model.put("sut", sut)
+
+        K result = test(renderMessage('notNull', model)) {
             T s -> s != null
         }
         return result
@@ -105,29 +129,50 @@ class Validation<K extends Validation, T> {
 
 
     K isNull() {
-        K result = test("${tagMsg}${sut} Must be null") { T s -> s instanceof NullObject || s == null }
+        InputModel model = new InputModel()
+        model.put("tagMsg", tagMsg)
+        model.put("sut", sut)
+
+        K result = test(renderMessage('isNull', model)) { T s -> s instanceof NullObject || s == null }
         return result
     }
 
 
     K notEqual(T n) {
-        return test("${tagMsg}${sut} Must be not equal to $n") { T n1 -> n1 != n }
+        InputModel model = new InputModel()
+        model.put("tagMsg", tagMsg)
+        model.put("sut", sut)
+        model.put("n", n)
+
+        return test(renderMessage('notEqual', model)) { T n1 -> n1 != n }
     }
 
 
     K equal(T n) {
-        return test("${tagMsg}${sut} Must be equal to $n") { T n1 -> n1 == n }
+        InputModel model = new InputModel()
+        model.put("tagMsg", tagMsg)
+        model.put("sut", sut)
+        model.put("n", n)
+        return test(renderMessage('equal', model)) { T n1 -> n1 == n }
     }
 
 
     StringValidation isString() {
-        K result = test("${tagMsg}${sut} Must be type String. Current is ${sut.getClass().name}") { T s -> s instanceof String }
+        InputModel model = new InputModel()
+        model.put("tagMsg", tagMsg)
+        model.put("sut", sut)
+
+        K result = test(renderMessage('isString', model)) { T s -> s instanceof String }
         return new StringValidation(result)
     }
 
 
     NumberValidation isNumber() {
-        K result = test("${tagMsg}${sut} Must be type Number. Current is ${sut.getClass().name}") { T s ->
+        InputModel model = new InputModel()
+        model.put("tagMsg", tagMsg)
+        model.put("sut", sut)
+
+        K result = test(renderMessage('isNumber', model)) { T s ->
             s instanceof Number || (s instanceof NullObject && !enableNullCheck)
         }
         return new NumberValidation(result)
@@ -135,26 +180,40 @@ class Validation<K extends Validation, T> {
 
 
     CollectionValidation isList() {
-        K result = test("Must be type List. Current is ${sut.getClass().name}") { T s -> s instanceof List }
+        InputModel model = new InputModel()
+        model.put("sut", sut)
+
+        K result = test(renderMessage('isList', model)) { T s -> s instanceof List }
         return new CollectionValidation(result)
     }
 
 
     CollectionValidation isCollection() {
-        K result = test("Must be type List. Current is ${sut.getClass().name}") { T s -> s instanceof Collection }
+        InputModel model = new InputModel()
+        model.put("sut", sut)
+
+        K result = test(renderMessage('isCollection', model)) { T s -> s instanceof Collection }
         return new CollectionValidation(result)
     }
 
 
     MapValidation isMap() {
-        K result = test("${tagMsg}${sut} Must be type Map. Current is ${sut.getClass().name}") { T s -> s instanceof Map }
+        InputModel model = new InputModel()
+        model.put("tagMsg", tagMsg)
+        model.put("sut", sut)
+
+        K result = test(renderMessage('isMap', model)) { T s -> s instanceof Map }
         return new MapValidation(result)
     }
 
 
     <R> Validation<Validation, R> is(Class<R> clazz) {
+        InputModel model = new InputModel()
+        model.put("tagMsg", tagMsg)
+        model.put("sut", sut)
+
         notNull()
-        test("${tagMsg}${sut} Must be type $clazz. Current is ${sut?.getClass()?.name}") { T s ->
+        test(renderMessage('is', model)) { T s ->
             s.class == clazz || clazz.isAssignableFrom(s.class)
         }
         // TODO: hay que probar esto. Lo cambio a this porque sino no propaga los errores
@@ -187,35 +246,26 @@ class Validation<K extends Validation, T> {
 
 
     <R> Validation<Validation, R> withExpression(String expression) {
-        expression = expression?.trim()
-        return withExpression(expression, "The expression did not evaluate to true ${tag ? "for $tag" : ""} with  ${sut} $expression")
+        String replacedExpression = expression.replace('$.value', value.toString()).trim()
+        InputModel model = new InputModel()
+        model.put("tag", tag)
+        model.put("replacedExpression", replacedExpression)
+
+        return withExpression(replacedExpression, renderMessage('withExpression', model))
     }
 
 
     <R> Validation<Validation, R> withExpression(String expression, String errorMsg) {
         return test(errorMsg) { n1 ->
-            String finalExpresion =resolveNumberAndMagnitude(n1, expression)
+            String finalExpresion = resolveNumberAndMagnitude(n1, expression)
             return Eval.me(finalExpresion)
         }
     }
 
     String resolveNumberAndMagnitude(value, String expression) {
-//        def expression = "64Mi >= 128Mi"
-        String tempExpression = "${value} ${expression}"
-        def matcher = tempExpression =~ /(\d+)([A-Za-z]+)/
-        if (matcher.find()) {
-            def number1 = matcher.group(1).toInteger()
-            def magnitude1 = matcher.group(2)
-            matcher.find()
-            def number2 = matcher.group(1).toInteger()
-            def magnitude2 = matcher.group(2)
-            def logicalExpression = "${number1} >= ${number2} && '${magnitude1}' == '${magnitude2}'"
-            return logicalExpression
-        }
-        value = value instanceof String ? "'$value'" : value
-        return "${value} ${expression}"
-    }
+        return ExpressionEvaluator.sanitizeExpression(expression)
 
+    }
 
     <R> Validation<Validation, R> withRangeExpression(String expression, String errorMsg) {
         return test(errorMsg) { n1 ->

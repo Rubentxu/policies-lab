@@ -1,8 +1,7 @@
-package dev.rubentxu.policies.parser
+package dev.rubentxu.policies.input.parser
 
 import dev.rubentxu.executors.StepsExecutor
-import dev.rubentxu.policies.InputModel
-import dev.rubentxu.policies.interfaces.IInputModelParser
+import dev.rubentxu.policies.input.InputModel
 import groovy.transform.Canonical
 import groovy.util.logging.Log
 
@@ -10,7 +9,7 @@ import java.nio.file.Path
 
 @Log
 @Canonical
-class CSVInputModelParser implements IInputModelParser {
+class CSVInputModelParser implements InputModelParser {
 
     private StepsExecutor steps
 

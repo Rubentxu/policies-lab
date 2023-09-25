@@ -1,8 +1,7 @@
 package dev.rubentxu.validations
 
+import dev.rubentxu.policies.result.ValidationOutcome
 import spock.lang.Specification
-
-import spock.lang.Shared
 
 class StringValidationSpec extends Specification {
 
@@ -10,7 +9,7 @@ class StringValidationSpec extends Specification {
     def 'Debe validar expresion logica tipo string'(String VALUE, String EXPRESION, boolean RESULTADO, String ERROR_MSG) {
 
         given:
-        ResultValidation result = null
+        ValidationOutcome result = null
 
 
         when:
@@ -50,7 +49,7 @@ class StringValidationSpec extends Specification {
     def 'Debe validar expresion logica tipo string template'(String VALUE, String EXPRESION, boolean RESULTADO, String ERROR_MSG) {
 
         given:
-        ResultValidation result = null
+        ValidationOutcome result = null
 
 
         when:

@@ -1,6 +1,6 @@
 package dev.rubentxu.validations
 
-import dev.rubentxu.policies.ReferencesResolver
+import dev.rubentxu.policies.ExpressionEvaluator
 
 
 //@Category
@@ -69,25 +69,6 @@ class ValidationCategory {
 
     }
 
-    static Validation validateReferenceResolver(Map self, String expression, boolean enableNullCheck) {
-        String value = new ReferencesResolver(expression: expression).resolve(self)
-        if(value == "") value = null
-//        PoliciesUtils.convertToType(value)
-
-        if(value instanceof Map) {
-            return MapValidation.from(value, expression, enableNullCheck)
-        } else if(value instanceof List) {
-            return CollectionValidation.from(value, expression, enableNullCheck)
-        } else if(value instanceof String) {
-            return StringValidation.from(value, expression, enableNullCheck)
-        } else if(value instanceof Number) {
-            return NumberValidation.from(value, expression, enableNullCheck)
-        }
-        return Validation.from(value, expression, enableNullCheck)
-
-
-    }
-
 
     static <T> Validation<Validation, T> validate(T self, boolean enableNullCheck = true) {
         return Validation.from(self, enableNullCheck)
@@ -103,4 +84,23 @@ class ValidationCategory {
         return Validation.from(self, tag, enableNullCheck)
     }
 
+
+    static Validation validateReferenceResolver(Map self, String reference, boolean enableNullCheck = true) {
+        def value = ExpressionEvaluator.evaluateExpression(self, reference)
+        if(value == "") value = null
+//        PoliciesUtils.convertToType(value)
+
+        if(value instanceof Map) {
+            return MapValidation.from(value, reference, enableNullCheck)
+        } else if(value instanceof List) {
+            return CollectionValidation.from(value, reference, enableNullCheck)
+        } else if(value instanceof String) {
+            return StringValidation.from(value, reference, enableNullCheck)
+        } else if(value instanceof Number) {
+            return NumberValidation.from(value, reference, enableNullCheck)
+        }
+        return Validation.from(value, reference, enableNullCheck)
+
+
+    }
 }

@@ -1,15 +1,14 @@
-package dev.rubentxu.policies
+package dev.rubentxu.policies.input.parser
 
 import dev.rubentxu.executors.StepsExecutor
-import dev.rubentxu.policies.interfaces.IInputModelParser
-import dev.rubentxu.policies.parser.CSVInputModelParser
-import dev.rubentxu.policies.parser.JsonInputModelParser
-import dev.rubentxu.policies.parser.YamlInputModelParser
+import dev.rubentxu.policies.ParserType
+import groovy.transform.Canonical
 import groovy.util.logging.Log
 
 
 
 @Log
+@Canonical
 class InputModelsParserFactory {
 
     StepsExecutor steps
@@ -18,13 +17,13 @@ class InputModelsParserFactory {
         this.steps = steps
     }
 
-    IInputModelParser getParser(String type) {
+    InputModelParser getParser(ParserType type) {
         switch (type) {
-            case "json":
+            case ParserType.JSON:
                 return new JsonInputModelParser(steps)
-            case "yaml":
+            case ParserType.YAML:
                 return new YamlInputModelParser(steps)
-            case "csv":
+            case ParserType.CSV:
                 return new CSVInputModelParser(steps)
             default:
                 throw new IllegalArgumentException("Invalid type: $type")

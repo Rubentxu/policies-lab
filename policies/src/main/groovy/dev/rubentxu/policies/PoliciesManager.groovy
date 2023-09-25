@@ -1,79 +1,50 @@
 package dev.rubentxu.policies
 
+import dev.rubentxu.executors.IStepsExecutor
 import dev.rubentxu.executors.StepsExecutor
-import dev.rubentxu.policies.interfaces.IInputModelParser
-import dev.rubentxu.policies.interfaces.IPoliciesManager
-import dev.rubentxu.validations.ResultValidation
+import dev.rubentxu.policies.input.parser.InputModelParser
+import dev.rubentxu.policies.input.parser.InputModelsParserFactory
+import dev.rubentxu.policies.result.PolicyOutcome
+import dev.rubentxu.policies.rules.PoliciesParserFactory
+import dev.rubentxu.policies.rules.PoliciesParser
 import groovy.transform.Canonical
 import groovy.util.logging.Log
+
 import java.nio.file.Path
 
 
-@Canonical
 @Log
-class PoliciesManager implements IPoliciesManager {
+@Canonical
+class PoliciesManager  {
 
-    StepsExecutor steps
-    Map<String, List<PolicyRule>> rulesByPath = [:]
     InputModelsParserFactory factory
+    PoliciesParserFactory policiesParserFactory
+    IStepsExecutor steps
 
-    @Override
-    List<PolicyRule> parseTopicPoliciesSpecs(Path path) {
+
+    List<Policy> parseTopicPoliciesSpecs(Path path) {
         log.info("Parsing topic policies specs from path: ${path}")
-        assert steps.fileExists(path): "File Policies specs not found in path: ${path}"
-        if (!rulesByPath.containsKey(path)) {
-            List<PolicyRule> rules = []
-            Map data = steps.readYaml(path, 'UTF-8')
-            data?.policies_specs.each { key, value ->
-                if (value.validations || value.exceptions) {
-                    rules.add(
-                            new PolicyRule(
-                                    code: value.key,
-                                    validations: value.validations.collect { new ReferencesResolver(expression: it) },
-                                    exceptions: value.exceptions.collect {
-                                        new ValidationExceptions(topicName: it.topicName,
-                                                validations: it.validations.collect { new ReferencesResolver(expression: it) }
-                                        )
-                                    },
-                            )
-                    )
-                }
-            }
-            rulesByPath.put(path, rules)
-        }
-        log.info("Parsed topic policies specs")
-        return rulesByPath.get(path)
+        PoliciesParser parser =  policiesParserFactory.getParser(ParserType.YAML)
+        return parser.parseFile(path)
 
     }
 
-    @Override
-    List<ResultValidation> applyPoliciesToInputModel(Path policiesFilePath, String typeInputModel, Path pathInputModel) {
-        IInputModelParser parser = factory.getParser(typeInputModel)
-        List<InputModel> inputModels = parser.parseFiles(steps.findFiles(policiesFilePath,"**/${pathInputModel}/*.${typeInputModel}"))
 
-        List<PolicyRule> policyRules = parseTopicPoliciesSpecs(policiesFilePath)
+    List<PolicyOutcome> applyPoliciesToInputModel(Path policiesFilePath, ParserType typeInputModel, Path pathInputModel) {
+        InputModelParser parser = factory.getParser(typeInputModel)
+        List<InputModel> inputModels = parser.parseFiles(steps.findFiles(pathInputModel,"**/${pathInputModel}/*.${typeInputModel}"))
 
-        List<ResultValidation> resultValidations = []
+        List<Policy> policyRules = parseTopicPoliciesSpecs(policiesFilePath)
 
-        for (final PolicyRule policyRule in policyRules) {
-            for (final InputModel input in inputModels) {
-                ResultValidation result = policyRule.validate(input)
-                resultValidations.add(result)
+        List<PolicyOutcome> resultValidations = []
+
+        for (final Policy policyRule in policyRules) {
+            for(final InputModel input in inputModels) {
+                List<PolicyOutcome> result = policyRule.resolve(input)
+                resultValidations.addAll(result)
             }
         }
         return resultValidations
-    }
-
-    @Override
-    List<ResultValidation> applyPoliciesToInputModel(Path policiesFilePath, InputModel inputModel) {
-        List<ResultValidation> resultValidations = []
-        List<PolicyRule> policyRules = parseTopicPoliciesSpecs(policiesFilePath)
-        for (final PolicyRule policyRule in policyRules) {
-            ResultValidation result = policyRule.validate(inputModel)
-            resultValidations.add(result)
-        }
-        return resultValidations
-
     }
 
 }

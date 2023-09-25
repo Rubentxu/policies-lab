@@ -1,8 +1,8 @@
-package dev.rubentxu.policies.parser
+package dev.rubentxu.policies.input.parser
 
+import dev.rubentxu.executors.IStepsExecutor
 import dev.rubentxu.executors.StepsExecutor
-import dev.rubentxu.policies.InputModel
-import dev.rubentxu.policies.interfaces.IInputModelParser
+import dev.rubentxu.policies.input.InputModel
 import groovy.transform.Canonical
 import groovy.util.logging.Log
 
@@ -10,9 +10,9 @@ import java.nio.file.Path
 
 @Canonical
 @Log
-class JsonInputModelParser implements IInputModelParser {
+class JsonInputModelParser implements InputModelParser {
 
-    private StepsExecutor steps
+    private IStepsExecutor steps
 
 
     @Override
