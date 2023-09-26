@@ -1,20 +1,31 @@
-policies_specs:
-#   Salario mínimo
-  MinSalary:
-    key: 'salario'
-    validations:
-      - '>= 35000'
+policies:
+##   Salario mínimo
+#  - id: MinSalary
+#    effect: Allow
+#    conditions: []
+#    rules:
+#      - key: salario
+#        type: VALIDATION
+#        expressions:
+#            - $.value >= 33000
 
   # Departamento válido
-  ValidDepartment:
-    key: 'departamento'
-    validations:
-      - 'IN ["Marketing", "Ventas", "Finanzas", "IT"]'
-    exceptions: [ ]
+  - id: ValidDepartment
+    effect: Allow
+    conditions: []
+    rules:
+      - key: departamento
+        type: VALIDATION
+        expressions:
+          - $.value in ["Marketing", "Ventas", "Finanzas", "IT"]
+
 
   # Correo electrónico válido
-  ValidEmail:
-    key: 'email'
-    validations:
-      - '==~ /([a-zA-Z0-9._%+\-]+)@([a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/'
-    exceptions: [ ]
+  - id: ValidEmail
+    effect: Allow
+    conditions: []
+    rules:
+      - key: email
+        type: VALIDATION
+        expressions:
+          - $.value ==~ /([a-zA-Z0-9._%+\-]+)@([a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/

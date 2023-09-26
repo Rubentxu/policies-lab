@@ -1,5 +1,7 @@
 package dev.rubentxu.validations
 
+import dev.rubentxu.policies.InputModel
+
 
 class CollectionValidation extends Validation<CollectionValidation, Collection> {
 
@@ -20,37 +22,71 @@ class CollectionValidation extends Validation<CollectionValidation, Collection> 
     }
 
     CollectionValidation lowerThan(Number max) {
-        return test("${tagMsg}${sut.size()} size Must be lower than $max") { Collection c -> c.size() < max }
+        InputModel model = new InputModel()
+        model.put("tagMsg", tagMsg)
+        model.put("sut", sut)
+        model.put("max", max)
+
+        return test(renderMessage('lowerThanCollection', model)) { Collection c -> c.size() < max }
     }
 
 
     CollectionValidation greaterThan(Number min) {
-        return test("${tagMsg}${sut.size()} size Must be greater than $min") { Collection c -> c.size() > min }
+        InputModel model = new InputModel()
+        model.put("tagMsg", tagMsg)
+        model.put("sut", sut)
+        model.put("min", min)
+
+        return test(renderMessage('greaterThanCollection', model)) { Collection c -> c.size() > min }
     }
 
 
     CollectionValidation between(Number min, Number max) {
-        return test("${tagMsg}${sut.size()} Must be between $min and $max") { Collection c -> c.size() >= min && c.size() <= max }
+        InputModel model = new InputModel()
+        model.put("tagMsg", tagMsg)
+        model.put("sut", sut)
+        model.put("min", min)
+        model.put("max", max)
+
+        return test(renderMessage('betweenCollection', model)) { Collection c -> c.size() >= min && c.size() <= max }
     }
 
 
     CollectionValidation isEmpty() {
-        return test("${tagMsg}${sut.size()} size Must be empty") { Collection n -> n.isEmpty() }
+        InputModel model = new InputModel()
+        model.put("tagMsg", tagMsg)
+        model.put("sut", sut)
+
+        return test(renderMessage('isEmpty', model)) { Collection n -> n.isEmpty() }
     }
 
 
     CollectionValidation notEmpty() {
-        return test("${tagMsg}${sut.size()} size Must be not empty") { Collection n -> !n.isEmpty() }
+        InputModel model = new InputModel()
+        model.put("tagMsg", tagMsg)
+        model.put("sut", sut)
+
+        return test(renderMessage('notEmptyCollection', model)) { Collection n -> !n.isEmpty() }
     }
 
 
     CollectionValidation containsAny(Object element) {
-        return test("${tagMsg}${sut.size()} size Must contain any of $element") { Collection n -> n.any { it == element } }
+        InputModel model = new InputModel()
+        model.put("tagMsg", tagMsg)
+        model.put("sut", sut)
+        model.put("element", element)
+
+        return test(renderMessage('containsAny', model)) { Collection n -> n.any { it == element } }
     }
 
 
     CollectionValidation containsAll(Object element) {
-        return test("${tagMsg}${sut.size()} size Must contain all of $element") { Collection n -> n.every { it == element } }
+        InputModel model = new InputModel()
+        model.put("tagMsg", tagMsg)
+        model.put("sut", sut)
+        model.put("element", element)
+
+        return test(renderMessage('containsAll', model)) { Collection n -> n.every { it == element } }
     }
 
 

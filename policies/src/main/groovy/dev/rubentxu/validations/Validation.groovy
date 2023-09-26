@@ -25,11 +25,13 @@ class Validation<K extends Validation, T> {
         this.sut = sut
         this.tag = ''
         this.enableNullCheck = enableNullCheck
+        Locale locale = Locale.getDefault()
+        messages = ResourceBundle.getBundle("i18n/messages", locale)
         if (this.enableNullCheck) {
             notNull()
         }
-        Locale locale = Locale.getDefault()
-        messages = ResourceBundle.getBundle("i18n/messages", locale)
+
+
 
     }
 
@@ -40,11 +42,12 @@ class Validation<K extends Validation, T> {
         this.sut = sut
         this.tag = tag
         this.enableNullCheck = enableNullCheck
+        Locale locale = Locale.getDefault()
+        messages = ResourceBundle.getBundle("i18n/messages", locale)
         if (this.enableNullCheck) {
             notNull()
         }
-        Locale locale = Locale.getDefault()
-        messages = ResourceBundle.getBundle("i18n/messages", locale)
+
     }
 
     protected String renderMessage(String key, InputModel model) {
@@ -112,13 +115,13 @@ class Validation<K extends Validation, T> {
     protected String getTagMsg() {
         InputModel model = new InputModel()
         model.put("tag", tag)
-        return tag ? renderMessage('getTagMsg', model) : ""
+        return renderMessage('getTagMsg', model)
     }
 
 
     K notNull() {
         InputModel model = new InputModel()
-        model.put("tagMsg", tagMsg)
+        model.put("tagMsg", getTagMsg())
         model.put("sut", sut)
 
         K result = test(renderMessage('notNull', model)) {
@@ -246,7 +249,7 @@ class Validation<K extends Validation, T> {
 
 
     <R> Validation<Validation, R> withExpression(String expression) {
-        String replacedExpression = expression.replace('$.value', value.toString()).trim()
+        String replacedExpression = expression.replace('$.value', ExpressionEvaluator.sanitizeValue(value.toString())).trim()
         InputModel model = new InputModel()
         model.put("tag", tag)
         model.put("replacedExpression", replacedExpression)

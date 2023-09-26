@@ -1,8 +1,17 @@
 package dev.rubentxu.validations
 
+import dev.rubentxu.StepsExecutorMock
+import dev.rubentxu.executors.IStepsExecutor
+import dev.rubentxu.policies.PoliciesManager
+import dev.rubentxu.policies.input.parser.InputModelsParserFactory
+import dev.rubentxu.policies.rules.PoliciesParserFactory
 import spock.lang.Specification
 
 class ValidationSpec extends Specification {
+
+    def setup() {
+        Locale.setDefault(new Locale("en", "US"))
+    }
 
     def "test notNull() with non-null value"() {
         given:
@@ -27,7 +36,8 @@ class ValidationSpec extends Specification {
         then:
         validation.isValid() == false
         validation.onErrorMessages.size() == 2
-        validation.onErrorMessages[0] == "null Must not be null"
+        validation.onErrorMessages[0] == "Variable with value null Must not be null"
+        validation.onErrorMessages[1] == "Variable with value null Must be type String."
     }
 
     def "test test() with valid predicate"() {

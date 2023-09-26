@@ -32,12 +32,12 @@ class ValidationResultSpec extends Specification {
 
     def "toMap should return a map representation of the ResultValidation object"() {
         given:
-        def resultValidation = new ValidationOutcome(isValid: true, errors: ["error1", "error2"], metadata: [key1: "value1", key2: "value2"])
+        def resultValidation = new ValidationOutcome(key: 'test', isValid: true, errors: ["error1", "error2"], metadata: [key1: "value1", key2: "value2"])
 
         when:
         def result = resultValidation.toMap()
 
         then:
-        result == [isValid: true, errors: ["error1", "error2"], metadata: [key1: "value1", key2: "value2"]]
+        result == [key: 'test', isValid: true, errors: ["error1", "error2"], metadata: [key1: "value1", key2: "value2"]]
     }
 }

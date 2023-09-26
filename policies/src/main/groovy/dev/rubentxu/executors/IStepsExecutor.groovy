@@ -4,7 +4,7 @@ import java.nio.file.Path
 
 interface IStepsExecutor {
 
-    List<HashMap<String, Object>> readCSV(Path path)
+    List<HashMap<String, Object>> readCSV(Path path, String encode)
 
     List<HashMap<String, Object>> readJSON(Path path, String encode)
 

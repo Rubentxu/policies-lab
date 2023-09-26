@@ -73,7 +73,7 @@ class ExpressionEvaluatorSpec extends Specification {
         String expression = ExpressionEvaluator.sanitizeExpression("age > 18 && city == 'New York'")
 
         then:
-        expression == "(age > 18) && (city == 'New York')"
+        expression == "('age' > 18) && ('city' == 'New York')"
     }
 
     def "resolve full expression with units"() {
@@ -81,7 +81,7 @@ class ExpressionEvaluatorSpec extends Specification {
         String expression = ExpressionEvaluator.sanitizeExpression("500m > 503m  || 300kg <  200kg &&  222 == 200")
 
         then:
-        expression == "(500 > 503 && 'm' == 'm') || (300 < 200 && 'kg' == 'kg') && (222 == 200 && '' == '')"
+        expression == "(500 > 503 && 'm' == 'm') || (300 <  200 && 'kg' == 'kg') && (222 == 200)"
     }
 
     def "resolve full expression with units 2"() {

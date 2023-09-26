@@ -1,5 +1,7 @@
 package dev.rubentxu.validations
 
+import dev.rubentxu.policies.InputModel
+
 
 class MapValidation extends Validation<MapValidation, Map> {
     def resolvedValue
@@ -30,13 +32,18 @@ class MapValidation extends Validation<MapValidation, Map> {
 
     MapValidation getKey() {
         resolvedValue = getResolvedValue(tag)
-        return test("There is no configuration defined for key '$tag'") { resolvedValue != null }
+        InputModel model = new InputModel()
+        model.put("tag", tag)
+
+        return test(renderMessage('getKey', model)) { resolvedValue != null }
     }
 
 
     MapValidation getKey(String key) {
         resolvedValue = getResolvedValue(key)
-        return test("There is no configuration defined for key '$key'") { resolvedValue != null }
+        InputModel model = new InputModel()
+        model.put("tag", key)
+        return test(renderMessage('getKey', model)) { resolvedValue != null }
     }
 
 

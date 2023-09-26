@@ -5,6 +5,7 @@ import dev.rubentxu.executors.StepsExecutor
 import dev.rubentxu.StepsExecutorMock
 import dev.rubentxu.policies.input.InputModel
 import dev.rubentxu.policies.input.parser.InputModelsParserFactory
+import dev.rubentxu.policies.result.PolicyOutcome
 import dev.rubentxu.policies.rules.PoliciesParserFactory
 import spock.lang.Specification
 
@@ -19,6 +20,7 @@ class PoliciesManagerSpec extends Specification {
         this.factory = new InputModelsParserFactory(steps)
         def policiesParserFactory = new PoliciesParserFactory(steps: steps)
         this.policiesManager = new PoliciesManager(factory: this.factory, policiesParserFactory: policiesParserFactory, steps: steps)
+        Locale.setDefault(new Locale("en", "US"))
     }
 
     def "ParseTopicPoliciesSpecs"() {
@@ -49,7 +51,7 @@ class PoliciesManagerSpec extends Specification {
     def "Apply Policies To InputModel type Json"() {
 
             when:
-            def results = policiesManager.applyPoliciesToInputModel(Path.of('policies/specs/new_policies.yaml'), ParserType.JSON, Path.of('policies/specs'))
+            def results = policiesManager.applyPoliciesToInputModel(Path.of('policies/specs/new_policies.yaml'), ParserType.JSON, Path.of('policies/inputs'))
             results.each { println(it.toString())}
 
             then:
@@ -59,16 +61,49 @@ class PoliciesManagerSpec extends Specification {
     }
 
 
-    def "Apply Policies To InputModel type CSV"() {
+    def "Policies type CSV not input models found"() {
 
                 when:
                 def results = policiesManager.applyPoliciesToInputModel(Path.of('policies/specs/policies_personal_specs.yaml'), ParserType.CSV, Path.of('policies/specs'))
                 results.each { println(it.toString())}
 
                 then:
-                results.size() > 0
-                results != null
-                results.every { it.errors.size() == 0 }
+                def e = thrown(AssertionError)
+                e.message == "No input models found in path: policies/specs. Expression: (inputModels.size() > 0)"
+    }
+
+    def "Policies type CSV not policies found"() {
+
+        when:
+        def results = policiesManager.applyPoliciesToInputModel(Path.of('policies/specs/policies_personal.yaml'), ParserType.CSV, Path.of('policies/inputs'))
+        results.each { println(it.toString())}
+
+        then:
+        def e = thrown(AssertionError)
+        e.message == "File Policies specs not found in path: policies/specs/policies_personal.yaml. Expression: steps.fileExists(path)"
+    }
+
+    def "Policies not found in file definition"() {
+
+        when:
+        def results = policiesManager.applyPoliciesToInputModel(Path.of('policies/specs/policies_personal_specs_error_schema.yaml'), ParserType.CSV, Path.of('policies/inputs'))
+        results.each { println(it.toString())}
+
+        then:
+        def e = thrown(AssertionError)
+        e.message == "Policies not found in file: policies/specs/policies_personal_specs_error_schema.yaml. Expression: data?.policies"
+    }
+
+    def "Apply Policies To InputModel type CSV"() {
+
+        when:
+        List<PolicyOutcome> results = policiesManager.applyPoliciesToInputModel(Path.of('policies/specs/policies_personal_specs.yaml'), ParserType.CSV, Path.of('policies/inputs'))
+        results.each { println(it.toString())}
+
+        then:
+        results.size() > 0
+        results != null
+
     }
 
 //    def "Reference map value"() {

@@ -50,6 +50,14 @@ class ExpressionEvaluator {
         return noSuchProperty
     }
 
+    static sanitizeValue(String value) {
+        if (value ==~/^(\d+[a-zA-Z]*)$||^(\d+)$/) {
+           return value
+        } else {
+            return "'${value}'"
+        }
+    }
+
     // Función para resolver una subexpresión
     static String resolveComparisonExpression(String subExpression) {
         def pattern = ~/(\d+)([a-zA-Z]*)\s*([<>=]+)\s*(\d+)([a-zA-Z]*)/
@@ -57,10 +65,13 @@ class ExpressionEvaluator {
 
         // Si la subexpresión coincide con el patrón, crea una nueva expresión con la comparación de valores y magnitudes
         if (matcher.find()) {
-            subExpression = subExpression.replace("${matcher.group(1)}${matcher.group(2)}", matcher.group(1))
-            subExpression = subExpression.replace("${matcher.group(4)}${matcher.group(5)}", matcher.group(4))
+            if(matcher.group(2) || matcher.group(5)){
+                subExpression = subExpression.replace("${matcher.group(1)}${matcher.group(2)}", matcher.group(1))
+                subExpression = subExpression.replace("${matcher.group(4)}${matcher.group(5)}", matcher.group(4))
+                return "(${subExpression} && '${matcher.group(2)}' == '${matcher.group(5)}')"
+            }
+            return "(${subExpression})"
 
-            return "(${subExpression} && '${matcher.group(2)}' == '${matcher.group(5)}')"
         }
 
         // Si la subexpresión no coincide con el patrón, devuelve la subexpresión original entre paréntesis
@@ -107,7 +118,7 @@ class ExpressionEvaluator {
 
 
     static String resolveWords(String subExpression) {
-        def pattern = ~/([a-zA-Z]*)\s*([<>=]+)\s*([a-zA-Z]*)/
+        def pattern = ~/([a-zA-Z-_]*)\s*([<>=]+)\s*([a-zA-Z-_]*)/
         def matcher = pattern.matcher(subExpression)
 
         // Si la subexpresión coincide con el patrón, crea una nueva expresión con la comparación de valores y magnitudes
@@ -116,7 +127,7 @@ class ExpressionEvaluator {
                 subExpression =  subExpression.replace(matcher.group(1), "'${matcher.group(1)}'")
             }
             if(matcher.group(3) && matcher.group(3) != matcher.group(1)){
-                subExpression = subExpression.replace(matcher.group(3), "'${matcher.group(3)}'")
+                subExpression = subExpression.replaceAll(/'?${matcher.group(3)}'?/, "'${matcher.group(3)}'")
             }
 
         }

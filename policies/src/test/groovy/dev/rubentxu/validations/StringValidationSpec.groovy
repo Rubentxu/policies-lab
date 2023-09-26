@@ -39,7 +39,7 @@ class StringValidationSpec extends Specification {
         'compact'        | 'IN ["compact", "delete"]'        | true          | null
         'delete'         | 'IN ["compact", "delete"]'        | true          | null
         'patata'         | 'IN ["compact", "delete"]'        | false         | 'TestValue with value patata Must contain in compact,delete'
-        null             | 'IN ["compact", "delete"]'        | false         | 'TestValue with value null Must be type String. Current is org.codehaus.groovy.runtime.NullObject'
+        null             | 'IN ["compact", "delete"]'        | false         | 'TestValue with value null Must be type String.'
 
 
 

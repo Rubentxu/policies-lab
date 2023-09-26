@@ -33,8 +33,10 @@ class PoliciesManager  {
     List<PolicyOutcome> applyPoliciesToInputModel(Path policiesFilePath, ParserType typeInputModel, Path pathInputModel) {
         InputModelParser parser = factory.getParser(typeInputModel)
         List<InputModel> inputModels = parser.parseFiles(steps.findFiles(pathInputModel,"**/${pathInputModel}/*.${typeInputModel}"))
+        assert inputModels.size() > 0: "No input models found in path: ${pathInputModel}"
 
         List<Policy> policyRules = parseTopicPoliciesSpecs(policiesFilePath)
+        assert policyRules.size() > 0: "No policies found in path: ${policiesFilePath}"
 
         List<PolicyOutcome> resultValidations = []
 

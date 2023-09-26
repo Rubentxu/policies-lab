@@ -40,7 +40,7 @@ class YamlPolicyParser implements PoliciesParser {
                             new Condition(
                                     key: conditionMap.key,
                                     value: conditionMap.value,
-                                    type: conditionMap.type as ConditionType
+                                    type: conditionMap.type.toString().toUpperCase() as ConditionType
                             )
                         },
                         rules: policyMap?.rules.collect { ruleMap ->

@@ -1,5 +1,6 @@
 package dev.rubentxu.policies.input.parser
 
+import dev.rubentxu.executors.IStepsExecutor
 import dev.rubentxu.executors.StepsExecutor
 import dev.rubentxu.policies.input.InputModel
 import groovy.transform.Canonical
@@ -11,11 +12,7 @@ import java.nio.file.Path
 @Canonical
 class YamlInputModelParser implements InputModelParser {
 
-    private StepsExecutor steps
-
-    YamlInputModelParser(StepsExecutor steps) {
-        this.steps = steps
-    }
+    private IStepsExecutor steps
 
     @Override
     List<InputModel> parseFiles(List<Path> files) {

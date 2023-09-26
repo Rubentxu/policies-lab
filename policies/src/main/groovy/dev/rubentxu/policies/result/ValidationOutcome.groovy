@@ -16,10 +16,11 @@ class ValidationOutcome implements PolicyOutcome {
     }
 
     void merge(ValidationOutcome outcome) {
-        isValid = isValid && outcome.isValid
-        errors.addAll(outcome.errors)
+        this.key = outcome.key
+        this.isValid = isValid && outcome.isValid
+        this.errors.addAll(outcome.errors)
         if (outcome?.metadata) {
-            metadata.putAll(outcome.metadata)
+            this.metadata.putAll(outcome.metadata)
         }
     }
 

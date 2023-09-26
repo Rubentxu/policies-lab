@@ -1,9 +1,18 @@
 package dev.rubentxu.validations
 
+import dev.rubentxu.StepsExecutorMock
+import dev.rubentxu.executors.IStepsExecutor
+import dev.rubentxu.policies.PoliciesManager
+import dev.rubentxu.policies.input.parser.InputModelsParserFactory
 import dev.rubentxu.policies.result.ValidationOutcome
+import dev.rubentxu.policies.rules.PoliciesParserFactory
 import spock.lang.Specification
 
 class MapValidationSpec extends Specification {
+
+    def setup() {
+        Locale.setDefault(new Locale("en", "US"))
+    }
 
     def "notNull should throw an exception when the map is null"() {
         given:

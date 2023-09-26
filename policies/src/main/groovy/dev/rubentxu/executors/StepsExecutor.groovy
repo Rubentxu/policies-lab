@@ -21,7 +21,7 @@ class StepsExecutor implements  IStepsExecutor {
     }
 
     @Override
-    List<HashMap<String, Object>> readCSV(Path path) {
+    List<HashMap<String, Object>> readCSV(Path path, String encode) {
         List<InputModel> list = new ArrayList<>();
 
         try (CSVReader reader = new CSVReaderBuilder(new FileReader(path.toString())).build()) {

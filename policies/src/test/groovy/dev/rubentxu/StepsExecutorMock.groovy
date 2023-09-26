@@ -183,7 +183,7 @@ class StepsExecutorMock extends StepsExecutor implements IStepsExecutor {
     }
 
     @Override
-    List<HashMap<String, Object>> readCSV(Path path) {
+    List<HashMap<String, Object>> readCSV(Path path, String encode) {
         URL contentFile = getClass().getClassLoader().getResource(path.toString())
         if(!contentFile) {
             return super.readCSV(path, encode)
