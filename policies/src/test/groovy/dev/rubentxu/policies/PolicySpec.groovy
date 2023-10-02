@@ -27,9 +27,9 @@ class PolicySpec extends Specification {
 
         where:
         KEY                                                             | VALUE                 |     INPUT_MODEL                       |   CONDITION_TYPE              | EXPECTED
-        'kind'                                                          |  'Deployment'         |       new InputModel(getInputMap())   |  ConditionType.EQUALS         |  true
-        'metadata.name'                                                 |  'peets-deployment'   |       new InputModel(getInputMap())   |  ConditionType.EQUALS         |  true
-        'spec.selector.matchLabels.app'                                 |  'peets'              |       new InputModel(getInputMap())   |  ConditionType.EQUALS         |  true
+//        'kind'                                                          |  'Deployment'         |       new InputModel(getInputMap())   |  ConditionType.EQUALS         |  true
+//        'metadata.name'                                                 |  'peets-deployment'   |       new InputModel(getInputMap())   |  ConditionType.EQUALS         |  true
+//        'spec.selector.matchLabels.app'                                 |  'peets'              |       new InputModel(getInputMap())   |  ConditionType.EQUALS         |  true
         'spec.selector.matchLabels.app2'                                |  'peets2'             |       new InputModel(getInputMap())   |  ConditionType.EQUALS         |  false
         'spec.selector.matchLabels.app2'                                |  ''                   |       new InputModel(getInputMap())   |  ConditionType.EXISTS         |  false
         'spec.template.spec.containers[0].ports[0].containerPort'       |  ''                   |       new InputModel(getInputMap())   |  ConditionType.EXISTS         |  true

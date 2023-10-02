@@ -1,14 +1,10 @@
 package dev.rubentxu.validations
 
-import dev.rubentxu.StepsExecutorMock
-import dev.rubentxu.executors.IStepsExecutor
-import dev.rubentxu.policies.PoliciesManager
-import dev.rubentxu.policies.input.parser.InputModelsParserFactory
+
 import dev.rubentxu.policies.result.ValidationOutcome
-import dev.rubentxu.policies.rules.PoliciesParserFactory
 import spock.lang.Specification
 
-class MapValidationSpec extends Specification {
+class MapValidatorSpec extends Specification {
 
     def setup() {
         Locale.setDefault(new Locale("en", "US"))
@@ -17,7 +13,7 @@ class MapValidationSpec extends Specification {
     def "notNull should throw an exception when the map is null"() {
         given:
         def sut = null
-        def validation = MapValidation.from(sut)
+        def validation = MapValidator.from(sut)
 
         when:
         def result =  validation.notNull()
@@ -29,7 +25,7 @@ class MapValidationSpec extends Specification {
     def "notNull should return the same instance of MapValidation when the map is not null"() {
         given:
         def sut = [:]
-        def validation = MapValidation.from(sut)
+        def validation = MapValidator.from(sut)
 
         when:
         def result = validation.notNull()
@@ -41,7 +37,7 @@ class MapValidationSpec extends Specification {
     def "getKey should throw an exception when the key is not present in the map"() {
         given:
         def sut = [:]
-        def validation = MapValidation.from(sut)
+        def validation = MapValidator.from(sut)
 
         when:
         ValidationOutcome result =  validation.getKey("key") .getResult()
@@ -53,7 +49,7 @@ class MapValidationSpec extends Specification {
     def "getKey should return the same instance of MapValidation when the key is present in the map"() {
         given:
         def sut = [key: "value"]
-        def validation = MapValidation.from(sut)
+        def validation = MapValidator.from(sut)
 
         when:
         def result = validation.getKey("key")
@@ -65,7 +61,7 @@ class MapValidationSpec extends Specification {
     def "getValue should return the resolved value of the map"() {
         given:
         def sut = [key: "value"]
-        def validation = MapValidation.from(sut)
+        def validation = MapValidator.from(sut)
 
         when:
         def result = validation.getKey("key").getValue()
@@ -77,7 +73,7 @@ class MapValidationSpec extends Specification {
     def "getValue should return null when the map is null"() {
         given:
         def sut = null
-        def validation = MapValidation.from(sut)
+        def validation = MapValidator.from(sut)
 
         when:
         def result = validation.getValue()
@@ -89,7 +85,7 @@ class MapValidationSpec extends Specification {
     def "getValue should return null when the key is not present in the map"() {
         given:
         def sut = [:]
-        def validation = MapValidation.from(sut)
+        def validation = MapValidator.from(sut)
 
         when:
         def result = validation.getKey("key").getValue()
@@ -101,7 +97,7 @@ class MapValidationSpec extends Specification {
     def "getValue should return the trimmed value when the resolved value is a string"() {
         given:
         def sut = [key: " value "]
-        def validation = MapValidation.from(sut)
+        def validation = MapValidator.from(sut)
 
         when:
         def result = validation.getKey("key").getValue()
@@ -113,7 +109,7 @@ class MapValidationSpec extends Specification {
     def "getValue should return the trimmed value when the resolved value is a GString"() {
         given:
         def sut = [key: " ${'value'} "]
-        def validation = MapValidation.from(sut)
+        def validation = MapValidator.from(sut)
 
         when:
         def result = validation.getKey("key").getValue()
@@ -125,7 +121,7 @@ class MapValidationSpec extends Specification {
     def "getValue should return the resolved value when the resolved value is not a string or a GString"() {
         given:
         def sut = [key: 1]
-        def validation = MapValidation.from(sut)
+        def validation = MapValidator.from(sut)
 
         when:
         def result = validation.getKey("key").getValue()
@@ -139,10 +135,10 @@ class MapValidationSpec extends Specification {
         def sut = [:]
 
         when:
-        def result = MapValidation.from(sut)
+        def result = MapValidator.from(sut)
 
         then:
-        result instanceof MapValidation
+        result instanceof MapValidator
     }
 
     def "from should set the sut property to the provided map"() {
@@ -150,10 +146,10 @@ class MapValidationSpec extends Specification {
         def sut = [:]
 
         when:
-        def result = MapValidation.from(sut)
+        def result = MapValidator.from(sut)
 
         then:
-        result.sut == sut
+        result.subjectUnderValidation == sut
     }
 
     def "from should set the tag property to null by default"() {
@@ -161,7 +157,7 @@ class MapValidationSpec extends Specification {
         Map sut = [:]
 
         when:
-        def result = MapValidation.from(sut)
+        def result = MapValidator.from(sut)
 
         then:
         result.tag == ''
@@ -173,39 +169,17 @@ class MapValidationSpec extends Specification {
         def tag = "tag"
 
         when:
-        def result = MapValidation.from(sut, tag)
+        def result = MapValidator.from(sut, tag)
 
         then:
         result.tag == tag
     }
 
-    def "from should set the enableNullCheck property to true by default"() {
-        given:
-        def sut = [:]
-
-        when:
-        def result = MapValidation.from(sut)
-
-        then:
-        result.enableNullCheck == true
-    }
-
-    def "from should set the enableNullCheck property to the provided value"() {
-        given:
-        def sut = [:]
-        def enableNullCheck = false
-
-        when:
-        def result = MapValidation.from(sut, enableNullCheck)
-
-        then:
-        result.enableNullCheck == enableNullCheck
-    }
 
     def "getKey should set the resolvedValue property to the value of the key in the map"() {
         given:
         def sut = [key: "value"]
-        def validation = MapValidation.from(sut)
+        def validation = MapValidator.from(sut)
 
         when:
         def result = validation.getKey("key")
@@ -217,7 +191,7 @@ class MapValidationSpec extends Specification {
     def "getKey should set the resolvedValue property to null when the key is not present in the map"() {
         given:
         def sut = [:]
-        def validation = MapValidation.from(sut)
+        def validation = MapValidator.from(sut)
 
         when:
         def result = validation.getKey("key")
@@ -229,7 +203,7 @@ class MapValidationSpec extends Specification {
     def "getKey should return the same instance of MapValidation"() {
         given:
         def sut = [key: "value"]
-        def validation = MapValidation.from(sut)
+        def validation = MapValidator.from(sut)
 
         when:
         def result = validation.getKey("key")
@@ -241,7 +215,7 @@ class MapValidationSpec extends Specification {
     def "getKey should return a new instance of MapValidation when the key is not present in the map"() {
         given:
         def sut = [:]
-        def validation = MapValidation.from(sut)
+        def validation = MapValidator.from(sut)
 
         when:
         def result = validation.getKey("key").getResult()
@@ -253,7 +227,7 @@ class MapValidationSpec extends Specification {
     def "getKey should return a new instance of MapValidation when the key is present in the map but the resolved value is null"() {
         given:
         def sut = [key: null]
-        def validation = MapValidation.from(sut)
+        def validation = MapValidator.from(sut)
 
         when:
         def result = validation.getKey("key").getValue()
@@ -265,7 +239,7 @@ class MapValidationSpec extends Specification {
     def "getKey should return a new instance of MapValidation when the key is present in the map but the resolved value is an empty string"() {
         given:
         def sut = [key: ""]
-        def validation = MapValidation.from(sut)
+        def validation = MapValidator.from(sut)
 
         when:
         def result = validation.getKey("key").getValue()
@@ -277,7 +251,7 @@ class MapValidationSpec extends Specification {
     def "getKey should return a new instance of MapValidation when the key is present in the map but the resolved value is a empty string"() {
         given:
         def sut = [key: " "]
-        def validation = MapValidation.from(sut)
+        def validation = MapValidator.from(sut)
 
         when:
         def result = validation.getKey("key").getValue()
@@ -289,7 +263,7 @@ class MapValidationSpec extends Specification {
     def "getKey should return a new instance of MapValidation when the key is present in the map but the resolved value is an empty list"() {
         given:
         def sut = [key: []]
-        def validation = MapValidation.from(sut)
+        def validation = MapValidator.from(sut)
 
         when:
         def result = validation.getKey("key").getValue()
@@ -301,7 +275,7 @@ class MapValidationSpec extends Specification {
     def "getKey should return a new instance of MapValidation when the key is present in the map but the resolved value is an empty map"() {
         given:
         def sut = [key: [:]]
-        def validation = MapValidation.from(sut)
+        def validation = MapValidator.from(sut)
 
         when:
         def result = validation.getKey("key").getValue()
@@ -314,7 +288,7 @@ class MapValidationSpec extends Specification {
     def "getKey should return a new instance of MapValidation when the key is present in the map but the resolved value is a zero number"() {
         given:
         def sut = [key: 0]
-        def validation = MapValidation.from(sut)
+        def validation = MapValidator.from(sut)
 
         when:
         def result = validation.getKey("key").getValue()
@@ -326,7 +300,7 @@ class MapValidationSpec extends Specification {
     def "getKey should return a new instance of MapValidation when the key is present in the map but the resolved value is a false boolean"() {
         given:
         def sut = [key: false]
-        def validation = MapValidation.from(sut)
+        def validation = MapValidator.from(sut)
 
         when:
         def result = validation.getKey("key").getValue()
@@ -338,7 +312,7 @@ class MapValidationSpec extends Specification {
     def "getKey should return a new instance of MapValidation when the key is present in the map but the resolved value is a null boolean"() {
         given:
         def sut = [key: null as Boolean]
-        def validation = MapValidation.from(sut)
+        def validation = MapValidator.from(sut)
 
         when:
         def result = validation.getKey("key").getValue()
@@ -350,7 +324,7 @@ class MapValidationSpec extends Specification {
     def "getKey should return a new instance of MapValidation when the key is present in the map but the resolved value is a null number"() {
         given:
         def sut = [key: null as Integer]
-        def validation = MapValidation.from(sut)
+        def validation = MapValidator.from(sut)
 
         when:
         def result = validation.getKey("key").getValue()

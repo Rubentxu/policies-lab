@@ -4,7 +4,7 @@ import dev.rubentxu.policies.ExpressionEvaluator
 import dev.rubentxu.policies.InputModel
 import dev.rubentxu.policies.result.PolicyOutcome
 import dev.rubentxu.policies.result.ValidationOutcome
-import dev.rubentxu.validations.ValidationCategory
+import dev.rubentxu.validations.ValidatorCategory
 import groovy.transform.Canonical
 
 @Canonical
@@ -23,7 +23,7 @@ final class Predicate implements RuleOperation {
 
         expressions.any { String expression ->
             try {
-                use(ValidationCategory) {
+                use(ValidatorCategory) {
                     ValidationOutcome validation = inputModel.validateReferenceResolver(key)
                             .withExpression(expression)
                             .getResult()
@@ -32,9 +32,8 @@ final class Predicate implements RuleOperation {
                 }
             } catch (Exception e) {
                 policyOutcome.isValid = false
-                policyOutcome.errors.add(e.message.trim())
+                 policyOutcome.errors.add(e.message)
             }
-
         }
         return policyOutcome
 

@@ -2,14 +2,14 @@ package dev.rubentxu.validations
 
 import spock.lang.Specification
 
-class CollectionValidationSpec extends Specification {
+class CollectionValidatorSpec extends Specification {
 
     def "should validate that a collection is empty"() {
         given:
         def collection = []
 
         when:
-        def result = CollectionValidation.from(collection).isEmpty().isValid()
+        def result = CollectionValidator.from(collection).isEmpty().isValid()
 
         then:
         result == true
@@ -20,7 +20,7 @@ class CollectionValidationSpec extends Specification {
         def collection = [1, 2, 3]
 
         when:
-        def result = CollectionValidation.from(collection).notEmpty().isValid()
+        def result = CollectionValidator.from(collection).notEmpty().isValid()
 
         then:
         result == true
@@ -31,7 +31,7 @@ class CollectionValidationSpec extends Specification {
         def collection = [1, 2, 3]
 
         when:
-        def result = CollectionValidation.from(collection).containsAny(2).isValid()
+        def result = CollectionValidator.from(collection).containsAny(2).isValid()
 
         then:
         result == true
@@ -42,7 +42,7 @@ class CollectionValidationSpec extends Specification {
         def collection = [1, 2, 3]
 
         when:
-        def result = CollectionValidation.from(collection).containsAll(1).isValid()
+        def result = CollectionValidator.from(collection).containsAll(1).isValid()
 
         then:
         result == false
@@ -53,7 +53,7 @@ class CollectionValidationSpec extends Specification {
         def collection = [1, 2, 3]
 
         when:
-        def result = CollectionValidation.from(collection).lowerThan(4).isValid()
+        def result = CollectionValidator.from(collection).lowerThan(4).isValid()
 
         then:
         result == true
@@ -64,7 +64,7 @@ class CollectionValidationSpec extends Specification {
         def collection = [1, 2, 3]
 
         when:
-        def result = CollectionValidation.from(collection).greaterThan(2).isValid()
+        def result = CollectionValidator.from(collection).greaterThan(2).isValid()
 
         then:
         result == true
@@ -75,7 +75,7 @@ class CollectionValidationSpec extends Specification {
         def collection = [1, 2, 3]
 
         when:
-        def result = CollectionValidation.from(collection).between(2, 4).isValid()
+        def result = CollectionValidator.from(collection).between(2, 4).isValid()
 
         then:
         result == true

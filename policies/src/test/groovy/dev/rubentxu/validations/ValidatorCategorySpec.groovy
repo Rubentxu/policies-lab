@@ -2,17 +2,17 @@ package dev.rubentxu.validations
 
 import spock.lang.Specification
 
-class ValidationCategorySpec extends Specification {
+class ValidatorCategorySpec extends Specification {
 
     def "validate a non-null string"() {
         given:
         def string = "hello world"
 
         when:
-        def result = ValidationCategory.validate(string)
+        def result = ValidatorCategory.validate(string)
 
         then:
-        result instanceof StringValidation
+        result instanceof StringValidator
         result.getValue() == string
     }
 
@@ -21,7 +21,7 @@ class ValidationCategorySpec extends Specification {
         def string = null
 
         when:
-        def result = ValidationCategory.validate(string)
+        def result = ValidatorCategory.validate(string)
 
         then:
         result.getValue() == null
@@ -33,10 +33,10 @@ class ValidationCategorySpec extends Specification {
         def tag = "myTag"
 
         when:
-        def result = ValidationCategory.validate(string, tag)
+        def result = ValidatorCategory.validate(string, tag)
 
         then:
-        result instanceof StringValidation
+        result instanceof StringValidator
         result.getValue() == string
 
     }
@@ -46,10 +46,10 @@ class ValidationCategorySpec extends Specification {
         def number = 42
 
         when:
-        def result = ValidationCategory.validate(number)
+        def result = ValidatorCategory.validate(number)
 
         then:
-        result instanceof NumberValidation
+        result instanceof NumberValidator
         result.getValue() == number
     }
 
@@ -58,7 +58,7 @@ class ValidationCategorySpec extends Specification {
         def number = null
 
         when:
-        def result = ValidationCategory.validate(number)
+        def result = ValidatorCategory.validate(number)
 
         then:
         result.getValue() == null
@@ -70,10 +70,10 @@ class ValidationCategorySpec extends Specification {
         def tag = "myTag"
 
         when:
-        def result = ValidationCategory.validate(number, tag)
+        def result = ValidatorCategory.validate(number, tag)
 
         then:
-        result instanceof NumberValidation
+        result instanceof NumberValidator
         result.getValue() == number
     }
 
@@ -82,10 +82,10 @@ class ValidationCategorySpec extends Specification {
         def list = [1, 2, 3]
 
         when:
-        def result = ValidationCategory.validate(list)
+        def result = ValidatorCategory.validate(list)
 
         then:
-        result instanceof CollectionValidation
+        result instanceof CollectionValidator
         result.getValue() == list
     }
 
@@ -94,7 +94,7 @@ class ValidationCategorySpec extends Specification {
         def list = null
 
         when:
-        def result = ValidationCategory.validate(list)
+        def result = ValidatorCategory.validate(list)
 
         then:
         result.getValue() == null
@@ -106,10 +106,10 @@ class ValidationCategorySpec extends Specification {
         def tag = "myTag"
 
         when:
-        def result = ValidationCategory.validate(list, tag)
+        def result = ValidatorCategory.validate(list, tag)
 
         then:
-        result instanceof CollectionValidation
+        result instanceof CollectionValidator
         result.getValue() == list
 
     }
@@ -119,10 +119,10 @@ class ValidationCategorySpec extends Specification {
         def map = [name: "John", age: 30]
 
         when:
-        def result = ValidationCategory.validate(map)
+        def result = ValidatorCategory.validate(map)
 
         then:
-        result instanceof MapValidation
+        result instanceof MapValidator
         result.getValue() == map
     }
 
@@ -131,7 +131,7 @@ class ValidationCategorySpec extends Specification {
         def map = null
 
         when:
-        def result = ValidationCategory.validate(map)
+        def result = ValidatorCategory.validate(map)
 
         then:
         result.getValue() == null
@@ -143,10 +143,10 @@ class ValidationCategorySpec extends Specification {
         def tag = "myTag"
 
         when:
-        def result = ValidationCategory.validate(map, tag)
+        def result = ValidatorCategory.validate(map, tag)
 
         then:
-        result instanceof MapValidation
+        result instanceof MapValidator
         result.getValue() == map
 
     }
@@ -157,10 +157,10 @@ class ValidationCategorySpec extends Specification {
         def tag = "person"
 
         when:
-        def result = ValidationCategory.validateAndGet(map, tag)
+        def result = ValidatorCategory.validateAndGet(map, tag)
 
         then:
-        result instanceof MapValidation
+        result instanceof MapValidator
         result.getValue() == [name: "John", age: 30]
     }
 
@@ -170,10 +170,10 @@ class ValidationCategorySpec extends Specification {
         def tag = "people"
 
         when:
-        def result = ValidationCategory.validateAndGet(map, tag)
+        def result = ValidatorCategory.validateAndGet(map, tag)
 
         then:
-        result instanceof CollectionValidation
+        result instanceof CollectionValidator
         result.getValue() == [[name: "John", age: 30], [name: "Jane", age: 25]]
     }
 
@@ -183,10 +183,10 @@ class ValidationCategorySpec extends Specification {
         def tag = "greeting"
 
         when:
-        def result = ValidationCategory.validateAndGet(map, tag)
+        def result = ValidatorCategory.validateAndGet(map, tag)
 
         then:
-        result instanceof StringValidation
+        result instanceof StringValidator
         result.getValue() == "hello world"
     }
 
@@ -196,10 +196,10 @@ class ValidationCategorySpec extends Specification {
         def tag = "age"
 
         when:
-        def result = ValidationCategory.validateAndGet(map, tag)
+        def result = ValidatorCategory.validateAndGet(map, tag)
 
         then:
-        result instanceof NumberValidation
+        result instanceof NumberValidator
         result.getValue() == 30
     }
 
@@ -208,10 +208,10 @@ class ValidationCategorySpec extends Specification {
         def object = new Object()
 
         when:
-        def result = ValidationCategory.validate(object)
+        def result = ValidatorCategory.validate(object)
 
         then:
-        result instanceof Validation
+        result instanceof Validator
         result.getValue() == object
     }
 
@@ -220,10 +220,10 @@ class ValidationCategorySpec extends Specification {
         def object = null
 
         when:
-        def result = ValidationCategory.validate(object)
+        def result = ValidatorCategory.validate(object)
 
         then:
-        result instanceof Validation
+        result instanceof Validator
         result.getValue() == null
     }
 
@@ -233,10 +233,10 @@ class ValidationCategorySpec extends Specification {
         def tag = "myTag"
 
         when:
-        def result = ValidationCategory.validate(object, tag)
+        def result = ValidatorCategory.validate(object, tag)
 
         then:
-        result instanceof Validation
+        result instanceof Validator
         result.getValue() == object
 
     }
@@ -247,10 +247,10 @@ class ValidationCategorySpec extends Specification {
         def tag = "myTag"
 
         when:
-        def result = ValidationCategory.validate(object, tag)
+        def result = ValidatorCategory.validate(object, tag)
 
         then:
-        result instanceof Validation
+        result instanceof Validator
         result.getValue() == null
 
     }
@@ -261,10 +261,10 @@ class ValidationCategorySpec extends Specification {
         def tag = "myTag"
 
         when:
-        def result = ValidationCategory.validateNull(object, tag, false)
+        def result = ValidatorCategory.validate(object, tag)
 
         then:
-        result instanceof Validation
+        result instanceof Validator
         result.getValue() == null
 
     }

@@ -3,7 +3,7 @@ package dev.rubentxu.validations
 import dev.rubentxu.policies.InputModel
 
 
-class NumberValidation extends Validation<NumberValidation, Number> {
+class NumberValidator extends Validator<NumberValidator, Number> {
     final static def REGEX_LESS_THAN = /<\s*(\d+\.?\d*)\s*$/
     final static def REGEX_MORE_THAN = />\s*(\d+\.?\d*)\s*$/
     final static def REGEX_BETWEEN = /(\d+\.?\d*)\.\.(\d+\.?\d*)\s*$/
@@ -12,133 +12,119 @@ class NumberValidation extends Validation<NumberValidation, Number> {
     final static def REGEX_LESS_OR_EQUAL = /<=\s*(\d+\.?\d*)\s*$/
     final static def REGEX_MORE_OR_EQUAL = />=\s*(\d+\.?\d*)\s*$/
 
-
-    private NumberValidation(Number sut, boolean enableNullCheck = true) {
-        super(sut, enableNullCheck)
+    private NumberValidator(Number number) {
+        super(number)
     }
 
-    private NumberValidation(Number sut, String tag, boolean enableNullCheck = true) {
-        super(sut, tag, enableNullCheck)
+    private NumberValidator(Number number, String tag) {
+        super(number, tag)
     }
 
-    NumberValidation(Validation validation) {
-        super(validation.sut, validation.tag, validation.enableNullCheck)
-        this.onErrorMessages = validation.onErrorMessages
-        this.validations = validation.validations
+    NumberValidator(Validator validation) {
+        super(validation.subjectUnderValidation, validation.tag)
+        this.validationResults = validation.validationResults
         this.tag = validation.tag
     }
 
-
-    NumberValidation lowerThan(Number max) {
+    NumberValidator lowerThan(Number max) {
         InputModel model = new InputModel()
         model.put("tagMsg", tagMsg)
-        model.put("sut", sut)
+        model.put("sut", subjectUnderValidation)
         model.put("max", max)
 
         return test(renderMessage('lowerThan', model)) { Number n -> n < max }
     }
 
-
-    NumberValidation greaterThan(Number min) {
+    NumberValidator greaterThan(Number min) {
         InputModel model = new InputModel()
         model.put("tagMsg", tagMsg)
-        model.put("sut", sut)
+        model.put("sut", subjectUnderValidation)
         model.put("min", min)
 
         return test(renderMessage('greaterThan', model)) { Number n -> n > min }
     }
 
-
-    NumberValidation between(Number min, Number max) {
+    NumberValidator between(Number min, Number max) {
         InputModel model = new InputModel()
         model.put("tagMsg", tagMsg)
-        model.put("sut", sut)
+        model.put("sut", subjectUnderValidation)
         model.put("min", min)
         model.put("max", max)
 
         return test(renderMessage('between', model)) { Number n -> n >= min && n <= max }
     }
 
-
-    NumberValidation isPositive() {
+    NumberValidator isPositive() {
         InputModel model = new InputModel()
         model.put("tagMsg", tagMsg)
-        model.put("sut", sut)
+        model.put("sut", subjectUnderValidation)
 
         return test(renderMessage('isPositive', model)) { Number n -> n > 0 }
     }
 
-
-    NumberValidation isNegative() {
+    NumberValidator isNegative() {
         InputModel model = new InputModel()
         model.put("tagMsg", tagMsg)
-        model.put("sut", sut)
+        model.put("sut", subjectUnderValidation)
 
         return test(renderMessage('isNegative', model)) { Number n -> n < 0 }
     }
 
-
-    NumberValidation isZero() {
+    NumberValidator isZero() {
         InputModel model = new InputModel()
         model.put("tagMsg", tagMsg)
-        model.put("sut", sut)
+        model.put("sut", subjectUnderValidation)
 
         return test(renderMessage('isZero', model)) { Number n -> n == 0 }
     }
 
-
-    NumberValidation isNotZero() {
+    NumberValidator isNotZero() {
         InputModel model = new InputModel()
         model.put("tagMsg", tagMsg)
-        model.put("sut", sut)
+        model.put("sut", subjectUnderValidation)
 
         return test(renderMessage('isNotZero', model)) { Number n -> n != 0 }
     }
 
-
-    NumberValidation isEven() {
+    NumberValidator isEven() {
         InputModel model = new InputModel()
         model.put("tagMsg", tagMsg)
-        model.put("sut", sut)
+        model.put("sut", subjectUnderValidation)
 
         return test(renderMessage('isEven', model)) { Number n -> n % 2 == 0 }
     }
 
-
-    NumberValidation isOdd() {
+    NumberValidator isOdd() {
         InputModel model = new InputModel()
         model.put("tagMsg", tagMsg)
-        model.put("sut", sut)
+        model.put("sut", subjectUnderValidation)
 
         return test(renderMessage('isOdd', model)) { Number n -> n % 2 != 0 }
     }
 
-
-    NumberValidation lessOrEqual(Number number) {
+    NumberValidator lessOrEqual(Number number) {
         InputModel model = new InputModel()
         model.put("tagMsg", tagMsg)
-        model.put("sut", sut)
+        model.put("sut", subjectUnderValidation)
         model.put("number", number)
 
         return test(renderMessage('lessOrEqual', model)) { Number n1 -> n1 <= n }
     }
 
-
-    NumberValidation moreOrEqual(Number number) {
+    NumberValidator moreOrEqual(Number number) {
         InputModel model = new InputModel()
         model.put("tagMsg", tagMsg)
-        model.put("sut", sut)
+        model.put("sut", subjectUnderValidation)
         model.put("number", number)
 
         return test(renderMessage('moreOrEqual', model)) { Number n1 -> n1 >= n }
     }
 
-
-    NumberValidation withExpression(String expression) {
+    NumberValidator withExpression(String expression) {
         expression = expression.trim()
         InputModel model = new InputModel()
         model.put("tagMsg", tagMsg)
-        model.put("sut", sut)
+        model.put("sut", subjectUnderValidation)
 
         if (expression ==~ REGEX_LESS_THAN) {
             def matcher = expression =~ REGEX_LESS_THAN
@@ -191,10 +177,7 @@ class NumberValidation extends Validation<NumberValidation, Number> {
             return notNull()
         }
         return super.withExpression(expression)
-
-
     }
-
 
     private Number toNumber(String s) {
         if (s == "NULL") {
@@ -206,15 +189,12 @@ class NumberValidation extends Validation<NumberValidation, Number> {
         return s.toBigInteger()
     }
 
-
-    static NumberValidation from(Number sut, boolean checkNull = true) {
-        return new NumberValidation(sut, checkNull)
+    static NumberValidator from(Number number) {
+        return new NumberValidator(number)
     }
 
-
-    static NumberValidation from(Number sut, String tag, boolean checkNull = true) {
-        return new NumberValidation(sut, tag, checkNull)
+    static NumberValidator from(Number number, String tag) {
+        return new NumberValidator(number, tag)
     }
-
 
 }

@@ -45,7 +45,7 @@ class PoliciesManagerSpec extends Specification {
         then:
         results.size() > 0
         results != null
-        results.every { it.errors.size() == 0 }
+        results.every { it.isValid }
     }
 
     def "Apply Policies To InputModel type Json"() {
@@ -57,7 +57,7 @@ class PoliciesManagerSpec extends Specification {
             then:
             results.size() > 0
             results != null
-            results.every { it.errors.size() == 0 }
+            results.every { it.isValid   }
     }
 
 

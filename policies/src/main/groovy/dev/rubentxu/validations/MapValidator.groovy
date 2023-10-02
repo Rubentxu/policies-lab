@@ -3,34 +3,31 @@ package dev.rubentxu.validations
 import dev.rubentxu.policies.InputModel
 
 
-class MapValidation extends Validation<MapValidation, Map> {
+class MapValidator extends Validator<MapValidator, Map> {
     def resolvedValue
 
-    private MapValidation(Map sut, boolean enableNullCheck = true) {
-        super(sut,enableNullCheck)
-        resolvedValue = sut
+    private MapValidator(Map map) {
+        super(map)
+        resolvedValue = map
     }
 
-    private MapValidation(Map sut, String tag, boolean enableNullCheck = true) {
-        super(sut, tag, enableNullCheck)
-        resolvedValue = sut
+    private MapValidator(Map map, String tag) {
+        super(map, tag)
+        resolvedValue = map
     }
 
-    MapValidation(Validation validation) {
-        super(validation.sut)
-        resolvedValue = validation.sut
-        this.onErrorMessages = validation.onErrorMessages
-        this.validations = validation.validations
+    MapValidator(Validator validation) {
+        super(validation.subjectUnderValidation)
+        resolvedValue = validation.subjectUnderValidation
+        this.validationResults = validation.validationResults
         this.tag = validation.tag
     }
 
-
-    MapValidation notNull() {
-        return super.notNull() as MapValidation
+    MapValidator notNull() {
+        return super.notNull() as MapValidator
     }
 
-
-    MapValidation getKey() {
+    MapValidator getKey() {
         resolvedValue = getResolvedValue(tag)
         InputModel model = new InputModel()
         model.put("tag", tag)
@@ -38,17 +35,15 @@ class MapValidation extends Validation<MapValidation, Map> {
         return test(renderMessage('getKey', model)) { resolvedValue != null }
     }
 
-
-    MapValidation getKey(String key) {
+    MapValidator getKey(String key) {
         resolvedValue = getResolvedValue(key)
         InputModel model = new InputModel()
         model.put("tag", key)
         return test(renderMessage('getKey', model)) { resolvedValue != null }
     }
 
-
     def getResolvedValue(String key) {
-        def result = findDeep(sut, key)
+        def result = findDeep(subjectUnderValidation, key)
 
         if (result instanceof String || result instanceof GString) {
             result = result.trim()
@@ -56,22 +51,18 @@ class MapValidation extends Validation<MapValidation, Map> {
         return result
     }
 
-
     @Override
     def getValue() {
         return resolvedValue
     }
 
-
-    static MapValidation from(Map sut, boolean checkNull = true) {
-        return new MapValidation(sut, checkNull)
+    static MapValidator from(Map map) {
+        return new MapValidator(map)
     }
 
-
-    static MapValidation from(Map sut, String tag, boolean checkNull = true) {
-        return new MapValidation(sut, tag, checkNull)
+    static MapValidator from(Map map, String tag) {
+        return new MapValidator(map, tag)
     }
-
 
     private def findDeep(Map m, String path) {
         if (m == null || !path) return null

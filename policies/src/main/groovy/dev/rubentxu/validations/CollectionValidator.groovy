@@ -3,101 +3,90 @@ package dev.rubentxu.validations
 import dev.rubentxu.policies.InputModel
 
 
-class CollectionValidation extends Validation<CollectionValidation, Collection> {
+class CollectionValidator extends Validator<CollectionValidator, Collection> {
 
-
-    private CollectionValidation(Collection sut, boolean enableNullCheck = true) {
-        super(sut, enableNullCheck)
+    private CollectionValidator(Collection sut) {
+        super(sut)
     }
 
-    private CollectionValidation(Collection sut, String tag, boolean enableNullCheck = true) {
-        super(sut, tag, enableNullCheck)
+    private CollectionValidator(Collection sut, String tag) {
+        super(sut, tag)
     }
 
-    CollectionValidation(Validation validation) {
-        super(validation.sut, validation.tag, validation.enableNullCheck)
-        this.onErrorMessages = validation.onErrorMessages
-        this.validations = validation.validations
+    CollectionValidator(Validator validation) {
+        super(validation.subjectUnderValidation, validation.tag)
+        this.validationResults = validation.validationResults
         this.tag = validation.tag
     }
 
-    CollectionValidation lowerThan(Number max) {
+    CollectionValidator lowerThan(Number max) {
         InputModel model = new InputModel()
         model.put("tagMsg", tagMsg)
-        model.put("sut", sut)
+        model.put("sut", subjectUnderValidation)
         model.put("max", max)
 
         return test(renderMessage('lowerThanCollection', model)) { Collection c -> c.size() < max }
     }
 
-
-    CollectionValidation greaterThan(Number min) {
+    CollectionValidator greaterThan(Number min) {
         InputModel model = new InputModel()
         model.put("tagMsg", tagMsg)
-        model.put("sut", sut)
+        model.put("sut", subjectUnderValidation)
         model.put("min", min)
 
         return test(renderMessage('greaterThanCollection', model)) { Collection c -> c.size() > min }
     }
 
-
-    CollectionValidation between(Number min, Number max) {
+    CollectionValidator between(Number min, Number max) {
         InputModel model = new InputModel()
         model.put("tagMsg", tagMsg)
-        model.put("sut", sut)
+        model.put("sut", subjectUnderValidation)
         model.put("min", min)
         model.put("max", max)
 
         return test(renderMessage('betweenCollection', model)) { Collection c -> c.size() >= min && c.size() <= max }
     }
 
-
-    CollectionValidation isEmpty() {
+    CollectionValidator isEmpty() {
         InputModel model = new InputModel()
         model.put("tagMsg", tagMsg)
-        model.put("sut", sut)
+        model.put("sut", subjectUnderValidation)
 
         return test(renderMessage('isEmpty', model)) { Collection n -> n.isEmpty() }
     }
 
-
-    CollectionValidation notEmpty() {
+    CollectionValidator notEmpty() {
         InputModel model = new InputModel()
         model.put("tagMsg", tagMsg)
-        model.put("sut", sut)
+        model.put("sut", subjectUnderValidation)
 
         return test(renderMessage('notEmptyCollection', model)) { Collection n -> !n.isEmpty() }
     }
 
-
-    CollectionValidation containsAny(Object element) {
+    CollectionValidator containsAny(Object element) {
         InputModel model = new InputModel()
         model.put("tagMsg", tagMsg)
-        model.put("sut", sut)
+        model.put("sut", subjectUnderValidation)
         model.put("element", element)
 
         return test(renderMessage('containsAny', model)) { Collection n -> n.any { it == element } }
     }
 
-
-    CollectionValidation containsAll(Object element) {
+    CollectionValidator containsAll(Object element) {
         InputModel model = new InputModel()
         model.put("tagMsg", tagMsg)
-        model.put("sut", sut)
+        model.put("sut", subjectUnderValidation)
         model.put("element", element)
 
         return test(renderMessage('containsAll', model)) { Collection n -> n.every { it == element } }
     }
 
-
-    static CollectionValidation from(Collection sut, boolean checkNull = true) {
-        return new CollectionValidation(sut, checkNull)
+    static CollectionValidator from(Collection sut) {
+        return new CollectionValidator(sut)
     }
 
-
-    static CollectionValidation from(Collection sut, String tag, boolean checkNull = true) {
-        return new CollectionValidation(sut, tag, checkNull)
+    static CollectionValidator from(Collection sut, String tag) {
+        return new CollectionValidator(sut, tag)
     }
-
 
 }

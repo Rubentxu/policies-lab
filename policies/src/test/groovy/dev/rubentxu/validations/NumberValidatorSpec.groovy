@@ -5,7 +5,12 @@ import spock.lang.Shared
 import spock.lang.Specification
 
 
-class NumberValidationSpec extends Specification {
+class NumberValidatorSpec extends Specification {
+
+    def setup() {
+        Locale.setDefault(new Locale("en", "US"))
+    }
+
 
     @Shared
     Number valueNull = null
@@ -15,8 +20,8 @@ class NumberValidationSpec extends Specification {
         ValidationOutcome result = null
 
         when:
-        use(ValidationCategory) {
-            result = VALUE.validate('TestValue', false)
+        use(ValidatorCategory) {
+            result = VALUE.validate('TestValue')
                     .isNumber()
                     .withExpression(EXPRESION)
                     .getResult()
@@ -80,26 +85,27 @@ class NumberValidationSpec extends Specification {
     def 'Debe validar expresion logica para expresiones con nulos'(String EXPRESION, boolean RESULTADO, String ERROR_MSG) {
 
         given:
-        NumberValidation result = null
+        NumberValidator result = null
         Number value = null
 
         when:
 
-        use(ValidationCategory) {
-            result = value.validate('TestValue', false)
+        use(ValidatorCategory) {
+            result = value.validate('TestValue')
                     .isNumber()
                     .withExpression(EXPRESION)
 
         }
         then:
         result.isValid() == RESULTADO
-        result.onErrorMessages[0] == ERROR_MSG
+        result.errors()[0] == ERROR_MSG
+        result.errors()[1] == ERROR_MSG2
 
         where:
 
-        EXPRESION          | RESULTADO     | ERROR_MSG
-         '!=NULL'          | false         | 'TestValue with value null Must not be null'
-         '==NULL'          | true          | null
+        EXPRESION          | RESULTADO     | ERROR_MSG                                          | ERROR_MSG2
+         '!=NULL'          | false         | 'TestValue with value null Must be type Number.'   | 'TestValue with value null Must not be null'
+         '== null'         | false          | 'TestValue with value null Must be type Number.'   | 'TestValue with value null Must be null'
 
     }
 

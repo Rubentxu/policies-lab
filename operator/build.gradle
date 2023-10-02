@@ -31,6 +31,7 @@ dependencies {
 application {
     mainClass.set("dev.rubentxu.Application")
 }
+
 java {
     sourceCompatibility = JavaVersion.toVersion("17")
     targetCompatibility = JavaVersion.toVersion("17")

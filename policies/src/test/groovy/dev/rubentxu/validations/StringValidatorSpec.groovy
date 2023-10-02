@@ -3,8 +3,11 @@ package dev.rubentxu.validations
 import dev.rubentxu.policies.result.ValidationOutcome
 import spock.lang.Specification
 
-class StringValidationSpec extends Specification {
+class StringValidatorSpec extends Specification {
 
+    def setup() {
+        Locale.setDefault(new Locale("en", "US"))
+    }
 
     def 'Debe validar expresion logica tipo string'(String VALUE, String EXPRESION, boolean RESULTADO, String ERROR_MSG) {
 
@@ -14,8 +17,8 @@ class StringValidationSpec extends Specification {
 
         when:
 
-        use(ValidationCategory) {
-            result = VALUE.validate('TestValue', false)
+        use(ValidatorCategory) {
+            result = VALUE.validate('TestValue')
                     .isString()
                     .withExpression(EXPRESION)
                     .getResult()
@@ -54,8 +57,8 @@ class StringValidationSpec extends Specification {
 
         when:
 
-        use(ValidationCategory) {
-            result = TEMPLATE.validate('TestValue', false)
+        use(ValidatorCategory) {
+            result = TEMPLATE.validate('TestValue')
                     .isString()
                     .renderValue([val: VALUE])
                     .withExpression(EXPRESION)
